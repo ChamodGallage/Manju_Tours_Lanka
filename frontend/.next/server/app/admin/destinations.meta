@@ -1,0 +1,40 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/admin/layout,_N_T_/admin/destinations/layout,_N_T_/admin/destinations/page,_N_T_/admin/destinations"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/_index",
+    "/admin/destinations/__PAGE__"
+  ],
+  "prefetchHints": {
+    "hints": 0,
+    "slots": {
+      "children": {
+        "hints": 64,
+        "slots": {
+          "children": {
+            "hints": 96,
+            "slots": {
+              "children": {
+                "hints": 160,
+                "slots": null
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/b3183fc32afe34329045edd793fe296488458cb4f7542223e9bcab87853ead5c/$/admin/destinations",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/admin/destinations/page"
+    },
+    "isFallback": false
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/admin/layout,_N_T_/admin/galleries/layout,_N_T_/admin/galleries/page,_N_T_/admin/galleries"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/_index",
+    "/admin/galleries/__PAGE__"
+  ],
+  "prefetchHints": {
+    "hints": 0,
+    "slots": {
+      "children": {
+        "hints": 64,
+        "slots": {
+          "children": {
+            "hints": 96,
+            "slots": {
+              "children": {
+                "hints": 160,
+                "slots": null
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/4b9ccf1685566de31477451573eecf2cbe9befc86a531898e2f00ca42b84d1b8/$/admin/galleries",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/admin/galleries/page"
+    },
+    "isFallback": false
+  }
+}

@@ -1,0 +1,202 @@
+export interface IslandStory {
+  slug: string;
+  title: string;
+  subtitle: string;
+  category: "First-Time Tips" | "Chauffeur Insights" | "Scenic Rail" | "Wildlife Safaris";
+  readTime: string;
+  publishedDate: string;
+  author: {
+    name: string;
+    role: string;
+    location: string;
+  };
+  heroImage: {
+    src: string;
+    alt: string;
+    caption: string;
+    isStock?: boolean;
+  };
+  excerpt: string;
+  content: {
+    intro: string;
+    sections: {
+      heading: string;
+      body: string;
+      localTip?: string;
+    }[];
+    conclusion: string;
+  };
+  relatedTourSlug: string;
+  tags: string[];
+}
+
+export const islandStories: IslandStory[] = [
+  {
+    slug: "first-timers-sri-lanka-route-guide",
+    title: "First-Timer's Guide to Sri Lanka: Realistic Drive Times & Optimal Routes",
+    subtitle: "How to explore ancient citadels, high-altitude tea trails, and southern surf bays without spending your whole vacation in transit.",
+    category: "First-Time Tips",
+    readTime: "6 min read",
+    publishedDate: "February 2026",
+    author: {
+      name: "Manju & Guiding Team",
+      role: "Lead Chauffeur-Guide & Founder",
+      location: "Hikkaduwa HQ",
+    },
+    heroImage: {
+      src: "/images/destinations/sigiriya/hero.webp",
+      alt: "Sigiriya Lion Rock monolith and morning mist over Sri Lanka's cultural triangle",
+      caption: "Sigiriya citadel rising above central Sri Lanka's forested plains.",
+      isStock: true,
+    },
+    excerpt: "Sri Lanka looks compact on a world map, but its winding hill roads and lush topography require smart route planning. Here is how our local chauffeur-guides design the perfect 7 to 10-day loop.",
+    content: {
+      intro: "One of the most frequent surprises international travelers share when arriving at Colombo Airport is the pacing of Sri Lankan roads. While a 120-kilometer stretch on the Southern Expressway between Colombo and Galle takes just 90 minutes, that same distance winding up into Nuwara Eliya or Ella takes close to 4 to 5 hours. To experience the real Sri Lanka without exhaustion, the secret is clustering your regions intelligently.",
+      sections: [
+        {
+          heading: "1. The Classic Golden Loop (Culture, Tea, Safari & Coast)",
+          body: "For a 7 to 10-day first visit, we almost always recommend moving clockwise: CMB Airport → Cultural Triangle (Sigiriya/Dambulla) → Kandy → Hill Country (Nuwara Eliya or Ella via scenic train) → Yala Safari → Southern Coast (Mirissa/Hikkaduwa) → Colombo. This route keeps transit legs under 3 to 4 hours per day and matches the natural elevation curve of the island.",
+          localTip: "Avoid rushing from Sigiriya to Ella in a single day. Break the journey in Kandy or Nuwara Eliya to allow your senses to adjust to the mountain mist and cooler temperatures.",
+        },
+        {
+          heading: "2. Demystifying the Dual Monsoons",
+          body: "Sri Lanka has two distinct weather seasons, which means there is always sunshine somewhere on the island. From December through April, the south coast (Hikkaduwa, Mirissa, Galle) and western beaches enjoy calm, glassy seas and peak whale-watching weather. From May through September, the east coast (Trincomalee, Passikudah) enjoys calm turquoise waters while the cultural triangle stays warm and dry.",
+          localTip: "If you are visiting between May and October, don't write off the hill country! A light mountain mist in Ella often makes the tea plantations look even more magical.",
+        },
+        {
+          heading: "3. Why Private Chauffeured Travel Transforms Your Trip",
+          body: "Self-driving rental cars in Sri Lanka can be stressful due to sudden switchbacks, tuk-tuks, and village bus overtaking customs. With your own dedicated local driver, you can look out the window, spot wild peafowls and water monitors, nap between stops, and ask your chauffeur to pull over whenever you spot a roadside fruit stall slicing fresh golden mangoes.",
+          localTip: "Ask your chauffeur to take the secondary rural routes through Kurunegala or Wellawaya instead of the congested main truck highways.",
+        },
+      ],
+      conclusion: "Traveling Sri Lanka is about unhurried moments—stopping for sweet roadside king coconuts, watching children fly kites on the ramparts of Galle Fort, and enjoying warm village welcomes. Let us know your dates, and we'll blueprint your custom route within 24 hours.",
+    },
+    relatedTourSlug: "grand-sri-lanka-odyssey",
+    tags: ["Travel Tips", "Route Planning", "First-Time Visitors", "Drive Times"],
+  },
+  {
+    slug: "why-private-chauffeur-travel-beats-tour-buses",
+    title: "The Chauffeur-Guide Ethos: Why Traveling Privately With a Local Friend Wins",
+    subtitle: "Freedom of pacing, authentic roadside culinary stops, and zero forced commission souvenir traps.",
+    category: "Chauffeur Insights",
+    readTime: "5 min read",
+    publishedDate: "January 2026",
+    author: {
+      name: "Manju",
+      role: "Founder & Senior Guide",
+      location: "Hikkaduwa HQ",
+    },
+    heroImage: {
+      src: "/images/team/fleet-van.webp",
+      alt: "Spacious private air-conditioned vehicle on the Sri Lankan palm coastline",
+      caption: "Private chauffeured comfort across every hill country switchback.",
+    },
+    excerpt: "Big package tour buses operate on rigid timetables and commission-kickback shops. Traveling with a private local chauffeur means you set the pace, discover real family eateries, and travel like a welcome guest.",
+    content: {
+      intro: "When I started Manju Tours Lanka in Hikkaduwa over ten years ago, I had one clear conviction: tourists were tired of being herded into 40-seat coach buses and ushered into staged spice gardens where operators earned kickbacks on marked-up herbal oils. Travel should be personal, honest, and filled with the warm, spontaneous hospitality Sri Lanka is famous for.",
+      sections: [
+        {
+          heading: "1. Spontaneous Freedom on the Open Road",
+          body: "If your children spot a wild mother elephant and her baby grazing peacefully near the edge of Kaudulla reservoir, we don't have to check our watch against a tour group itinerary. We turn off the engine, roll down the windows, and let your family marvel at the sight for as long as you desire. If you want to sleep an extra hour in Nuwara Eliya, we simply adjust our departure.",
+          localTip: "Tell your chauffeur what music you like or ask them to play local acoustic Sinhala guitar songs for your mountain drive.",
+        },
+        {
+          heading: "2. Honest, Commission-Free Local Recommendations",
+          body: "We refuse to take our guests to staged commercial tourist traps. When you want to taste authentic Ceylon tea, we take you to ethical working estates. When you crave real hopper pancakes or fiery kottu roti, we guide you to clean, family-run roadside kitchens where local teachers and doctors eat.",
+          localTip: "Always ask your driver where their own family eats in Kandy or Galle—that's where you will find the most delicious clay-pot curries on the island.",
+        },
+        {
+          heading: "3. Safety & Island Road Mastery",
+          body: "Sri Lankan mountain roads are breathtakingly scenic, but they require seasoned instincts. All of our vehicles are rigorously serviced Toyota sedans, luxury vans, and 4x4 safari cruisers equipped with front and rear air-conditioning, comprehensive tourist passenger insurance, and verified emergency kits.",
+        },
+      ],
+      conclusion: "You arrive as our guests, and you depart as our family. That is not just a company motto—it is the guiding principle of every chauffeur on our team.",
+    },
+    relatedTourSlug: "cultural-triangle-hill-country-classic",
+    tags: ["Chauffeur Guide", "Local Culture", "Trust & Safety", "Honest Travel"],
+  },
+  {
+    slug: "kandy-to-ella-scenic-train-insider-tips",
+    title: "The Kandy-to-Ella Scenic Train: Complete Guide to Tickets, Best Carriages & Views",
+    subtitle: "Everything you need to know about riding one of the world's most iconic mountain railway journeys.",
+    category: "Scenic Rail",
+    readTime: "7 min read",
+    publishedDate: "February 2026",
+    author: {
+      name: "Guiding Team",
+      role: "Highland Rail Specialists",
+      location: "Ella & Kandy",
+    },
+    heroImage: {
+      src: "/images/destinations/ella/hero.webp",
+      alt: "Blue passenger train crossing the Nine Arch Bridge in Ella amidst lush tea hills",
+      caption: "The red train crossing the Nine Arch Bridge in Ella.",
+      isStock: true,
+    },
+    excerpt: "Clattering through misty eucalyptus forests, over soaring stone viaducts, and past emerald tea pluckers—the Kandy-to-Ella train is unforgettable. Here is how to navigate tickets, luggage, and the best seats.",
+    content: {
+      intro: "Built by the British in the 19th century to transport highland tea leaves to the coastal docks of Colombo, the Main Line railway between Kandy, Nanu Oya (Nuwara Eliya), and Ella is now celebrated by National Geographic and travel writers worldwide as one of the most romantic train rides on earth.",
+      sections: [
+        {
+          heading: "1. The Chauffeur Luggage Advantage",
+          body: "The biggest headache for independent backpackers on the train is wrestling large hard-case luggage onto crowded railway carriages and trying to keep an eye on bags while standing at open doors. When you travel with Manju Tours Lanka, your chauffeur takes your heavy luggage in the private vehicle, drops you directly at Kandy or Nanu Oya station with your reserved tickets, and meets you on the platform at Ella with cold drinks and air-conditioned comfort.",
+          localTip: "Take only a small daypack on the train with your camera, sunglasses, a light cardigan (mountain tunnels get breezy), and some Sri Lankan rupees for tea snacks.",
+        },
+        {
+          heading: "2. Reserved 1st Class vs. Open-Door 2nd Class",
+          body: "First-class carriages have air-conditioning and sealed windows. While comfortable, sealed windows prevent you from leaning out to capture photos of the famous blue train curving along tea hills! For the quintessential experience, we recommend reserved 2nd or 3rd class reserved seats, where windows remain wide open and cooling mountain air rushes through the carriage.",
+          localTip: "Between Kandy and Nuwara Eliya, sit on the right side of the train for valley vistas. Between Nuwara Eliya and Ella, the left side offers dramatic mountain ravines.",
+        },
+        {
+          heading: "3. Ticket Booking Windows",
+          body: "Sri Lanka Railways releases reserved seats precisely 30 days in advance, and peak-season seats often sell out within minutes of opening. When booking your tour with us, our operations team secures your railway reservations the moment the ticketing portal opens.",
+        },
+      ],
+      conclusion: "Hearing the whistle echo through mountain tunnels while taking in the smell of fresh tea leaves is an experience you will treasure for a lifetime.",
+    },
+    relatedTourSlug: "ceylon-tea-trails-scenic-train",
+    tags: ["Scenic Train", "Kandy to Ella", "Photography", "Nine Arch Bridge"],
+  },
+  {
+    slug: "ethical-sri-lanka-wildlife-safaris-guide",
+    title: "Ethical Wildlife Safaris: Where to Spot Wild Elephants & Leopards Responsibly",
+    subtitle: "Choosing the right national park for your season, private jeep ethics, and avoiding crowded herds.",
+    category: "Wildlife Safaris",
+    readTime: "6 min read",
+    publishedDate: "January 2026",
+    author: {
+      name: "Manju & Safari Trackers",
+      role: "Wildlife Safari Specialists",
+      location: "Yala & Minneriya",
+    },
+    heroImage: {
+      src: "/images/experiences/minneriya-elephants.webp",
+      alt: "Wild Asian elephant herd gathering at Minneriya National Park",
+      caption: "Gentle giant Asian elephants grazing freely in national park sanctuaries.",
+      isStock: true,
+    },
+    excerpt: "With the highest leopard density in the world and the legendary Asian elephant gathering, Sri Lanka is a wildlife wonderland. Here is our guide to experiencing it ethically and intimately.",
+    content: {
+      intro: "Sri Lanka is one of the premier safari destinations outside of the African continent. Compact distances allow you to spot blue whales in the Indian Ocean at dawn and watch wild elephants graze around an ancient freshwater reservoir by sunset.",
+      sections: [
+        {
+          heading: "1. Yala vs. Wilpattu for Elusive Leopards",
+          body: "Yala National Park (Block 1) has the world's densest concentration of Sri Lankan leopards (Panthera pardus kotiya). Because it is famous, it can experience jeep queues at peak hours. We always send our guests with senior local drivers who choose quieter perimeter zones and dawn departures. For travelers seeking raw wilderness and fewer vehicles, Wilpattu in the northwest offers dense villu lakes and sloth bears.",
+          localTip: "Always opt for a dawn safari (6:00 AM entrance). Leopards are nocturnal hunters and often lounge on sun-warmed granite boulders right as the mist lifts.",
+        },
+        {
+          heading: "2. The Great Elephant Gathering: Minneriya & Kaudulla",
+          body: "Between July and October, hundreds of wild Asian elephants migrate to the receding shores of Minneriya and Kaudulla reservoirs in the Cultural Triangle to feed on fresh green shoots. Watching 150 to 200 elephants interact, calves playfully splashing in the mud, is an awe-inspiring wildlife spectacle.",
+          localTip: "Our chauffeurs call park rangers daily to verify whether the herd has congregated at Minneriya, Kaudulla, or Hurulu Eco Park so we take you to the exact park with the largest herd.",
+        },
+        {
+          heading: "3. Our Strict Ethical Safari Standards",
+          body: "We partner exclusively with licensed, respectful jeep drivers who never speed towards animals, maintain a 30-meter buffer from nursing mothers, and kill vehicle engines to let wildlife move in silence without distress.",
+        },
+      ],
+      conclusion: "Witnessing wildlife in its natural sanctuary with zero fencing is one of the greatest privileges of traveling Sri Lanka. We take pride in protecting these ecosystems for generations to come.",
+    },
+    relatedTourSlug: "wild-lanka-safari-expedition",
+    tags: ["Wildlife Safaris", "Yala Leopards", "Elephants", "Eco Travel"],
+  },
+];

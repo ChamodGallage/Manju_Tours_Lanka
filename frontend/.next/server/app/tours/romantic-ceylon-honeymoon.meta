@@ -1,0 +1,40 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/tours/layout,_N_T_/tours/[slug]/layout,_N_T_/tours/[slug]/page,_N_T_/tours/romantic-ceylon-honeymoon"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/_index",
+    "/tours/$d$slug/__PAGE__"
+  ],
+  "prefetchHints": {
+    "hints": 0,
+    "slots": {
+      "children": {
+        "hints": 64,
+        "slots": {
+          "children": {
+            "hints": 96,
+            "slots": {
+              "children": {
+                "hints": 160,
+                "slots": null
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/7d2501addfa76d1d05af2659130df84709fb9cbb40d666c095079fbd01347eca/$/tours/romantic-ceylon-honeymoon",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/tours/[slug]/page"
+    },
+    "isFallback": false
+  }
+}

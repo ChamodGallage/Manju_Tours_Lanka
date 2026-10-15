@@ -1,0 +1,1804 @@
+{
+  "generatedAt": "2026-10-12T12:24:01.179Z",
+  "scope": "Image assets in public/; direct and possible dynamic references scanned in src/",
+  "assetCount": 82,
+  "assets": [
+    {
+      "path": "/file.svg",
+      "filename": "file.svg",
+      "extension": "svg",
+      "sizeBytes": 391,
+      "dimensions": {
+        "viewBox": "0 0 16 16",
+        "format": "svg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/globe.svg",
+      "filename": "globe.svg",
+      "extension": "svg",
+      "sizeBytes": 1035,
+      "dimensions": {
+        "viewBox": "0 0 16 16",
+        "format": "svg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/bentota/hero.avif",
+      "filename": "hero.avif",
+      "extension": "avif",
+      "sizeBytes": 449144,
+      "dimensions": {
+        "width": 1920,
+        "height": 1275,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/bentota/hero.jpg",
+      "filename": "hero.jpg",
+      "extension": "jpg",
+      "sizeBytes": 849856,
+      "dimensions": {
+        "width": 2144,
+        "height": 1424,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/bentota/hero.webp",
+      "filename": "hero.webp",
+      "extension": "webp",
+      "sizeBytes": 426996,
+      "dimensions": {
+        "width": 1920,
+        "height": 1275,
+        "format": "webp"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/ella/hero.avif",
+      "filename": "hero.avif",
+      "extension": "avif",
+      "sizeBytes": 595800,
+      "dimensions": {
+        "width": 1920,
+        "height": 1080,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/ella/hero.jpg",
+      "filename": "hero.jpg",
+      "extension": "jpg",
+      "sizeBytes": 827288,
+      "dimensions": {
+        "width": 1920,
+        "height": 1080,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/ella/hero.webp",
+      "filename": "hero.webp",
+      "extension": "webp",
+      "sizeBytes": 609670,
+      "dimensions": {
+        "width": 1920,
+        "height": 1080,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/app/api/admin/galleries/route.ts",
+          "lines": [
+            35
+          ]
+        },
+        {
+          "file": "src/components/home/ExperiencePillars.tsx",
+          "lines": [
+            63
+          ]
+        },
+        {
+          "file": "src/components/home/HeroSection.tsx",
+          "lines": [
+            30
+          ]
+        },
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            195,
+            948,
+            955
+          ]
+        },
+        {
+          "file": "src/lib/data/stories-dataset.ts",
+          "lines": [
+            131
+          ]
+        },
+        {
+          "file": "src/lib/queries/site-images.ts",
+          "lines": [
+            31,
+            129,
+            330,
+            520,
+            656
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/app/api/admin/galleries/route.ts",
+        "src/components/home/ExperiencePillars.tsx",
+        "src/components/home/HeroSection.tsx",
+        "src/lib/data/seed-dataset.ts",
+        "src/lib/data/stories-dataset.ts",
+        "src/lib/queries/site-images.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/destinations/galle-fort/hero.avif",
+      "filename": "hero.avif",
+      "extension": "avif",
+      "sizeBytes": 921787,
+      "dimensions": {
+        "width": 1920,
+        "height": 1439,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/galle-fort/hero.jpg",
+      "filename": "hero.jpg",
+      "extension": "jpg",
+      "sizeBytes": 12238991,
+      "dimensions": {
+        "width": 4056,
+        "height": 3040,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/galle-fort/hero.webp",
+      "filename": "hero.webp",
+      "extension": "webp",
+      "sizeBytes": 829080,
+      "dimensions": {
+        "width": 1920,
+        "height": 1439,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/components/home/ExperiencePillars.tsx",
+          "lines": [
+            107
+          ]
+        },
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            287,
+            762,
+            769
+          ]
+        },
+        {
+          "file": "src/lib/queries/site-images.ts",
+          "lines": [
+            193,
+            382
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/components/home/ExperiencePillars.tsx",
+        "src/lib/data/seed-dataset.ts",
+        "src/lib/queries/site-images.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/destinations/kandy/gallery-1.avif",
+      "filename": "gallery-1.avif",
+      "extension": "avif",
+      "sizeBytes": 209029,
+      "dimensions": {
+        "width": 1200,
+        "height": 777,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/kandy/gallery-1.jpg",
+      "filename": "gallery-1.jpg",
+      "extension": "jpg",
+      "sizeBytes": 376001,
+      "dimensions": {
+        "width": 1581,
+        "height": 1024,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/kandy/gallery-1.webp",
+      "filename": "gallery-1.webp",
+      "extension": "webp",
+      "sizeBytes": 178048,
+      "dimensions": {
+        "width": 1200,
+        "height": 777,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/components/home/ExperiencePillars.tsx",
+          "lines": [
+            85
+          ]
+        },
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            67
+          ]
+        },
+        {
+          "file": "src/lib/queries/site-images.ts",
+          "lines": [
+            161,
+            294
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/components/home/ExperiencePillars.tsx",
+        "src/lib/data/seed-dataset.ts",
+        "src/lib/queries/site-images.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/destinations/kandy/hero.avif",
+      "filename": "hero.avif",
+      "extension": "avif",
+      "sizeBytes": 469253,
+      "dimensions": {
+        "width": 1920,
+        "height": 1280,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/kandy/hero.jpg",
+      "filename": "hero.jpg",
+      "extension": "jpg",
+      "sizeBytes": 4674212,
+      "dimensions": {
+        "width": 3072,
+        "height": 2048,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/kandy/hero.webp",
+      "filename": "hero.webp",
+      "extension": "webp",
+      "sizeBytes": 369004,
+      "dimensions": {
+        "width": 1920,
+        "height": 1280,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/app/api/admin/galleries/route.ts",
+          "lines": [
+            52
+          ]
+        },
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            59
+          ]
+        },
+        {
+          "file": "src/lib/queries/site-images.ts",
+          "lines": [
+            278
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/app/api/admin/galleries/route.ts",
+        "src/lib/data/seed-dataset.ts",
+        "src/lib/queries/site-images.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/destinations/mirissa/gallery-1.avif",
+      "filename": "gallery-1.avif",
+      "extension": "avif",
+      "sizeBytes": 303979,
+      "dimensions": {
+        "width": 1200,
+        "height": 900,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/mirissa/gallery-1.jpg",
+      "filename": "gallery-1.jpg",
+      "extension": "jpg",
+      "sizeBytes": 5105063,
+      "dimensions": {
+        "width": 4032,
+        "height": 3024,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/mirissa/gallery-1.webp",
+      "filename": "gallery-1.webp",
+      "extension": "webp",
+      "sizeBytes": 263444,
+      "dimensions": {
+        "width": 1200,
+        "height": 900,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            248
+          ]
+        },
+        {
+          "file": "src/lib/queries/site-images.ts",
+          "lines": [
+            364
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/lib/data/seed-dataset.ts",
+        "src/lib/queries/site-images.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/destinations/mirissa/hero.avif",
+      "filename": "hero.avif",
+      "extension": "avif",
+      "sizeBytes": 488328,
+      "dimensions": {
+        "width": 1920,
+        "height": 1080,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/mirissa/hero.jpg",
+      "filename": "hero.jpg",
+      "extension": "jpg",
+      "sizeBytes": 4663719,
+      "dimensions": {
+        "width": 6014,
+        "height": 3383,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/mirissa/hero.webp",
+      "filename": "hero.webp",
+      "extension": "webp",
+      "sizeBytes": 440378,
+      "dimensions": {
+        "width": 1920,
+        "height": 1080,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/app/api/admin/galleries/route.ts",
+          "lines": [
+            19
+          ]
+        },
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            240,
+            682,
+            689
+          ]
+        },
+        {
+          "file": "src/lib/queries/site-images.ts",
+          "lines": [
+            348,
+            504
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/app/api/admin/galleries/route.ts",
+        "src/lib/data/seed-dataset.ts",
+        "src/lib/queries/site-images.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/destinations/nuwara-eliya/hero.avif",
+      "filename": "hero.avif",
+      "extension": "avif",
+      "sizeBytes": 577296,
+      "dimensions": {
+        "width": 1920,
+        "height": 1282,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/nuwara-eliya/hero.jpg",
+      "filename": "hero.jpg",
+      "extension": "jpg",
+      "sizeBytes": 6712618,
+      "dimensions": {
+        "width": 4091,
+        "height": 2731,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/nuwara-eliya/hero.webp",
+      "filename": "hero.webp",
+      "extension": "webp",
+      "sizeBytes": 518942,
+      "dimensions": {
+        "width": 1920,
+        "height": 1282,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/components/home/ExperiencePillars.tsx",
+          "lines": [
+            52
+          ]
+        },
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            106
+          ]
+        },
+        {
+          "file": "src/lib/queries/site-images.ts",
+          "lines": [
+            113,
+            312,
+            552
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/components/home/ExperiencePillars.tsx",
+        "src/lib/data/seed-dataset.ts",
+        "src/lib/queries/site-images.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/destinations/polonnaruwa/hero.avif",
+      "filename": "hero.avif",
+      "extension": "avif",
+      "sizeBytes": 579119,
+      "dimensions": {
+        "width": 1920,
+        "height": 1280,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/polonnaruwa/hero.jpg",
+      "filename": "hero.jpg",
+      "extension": "jpg",
+      "sizeBytes": 4972281,
+      "dimensions": {
+        "width": 3888,
+        "height": 2592,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/polonnaruwa/hero.webp",
+      "filename": "hero.webp",
+      "extension": "webp",
+      "sizeBytes": 494238,
+      "dimensions": {
+        "width": 1920,
+        "height": 1280,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/components/home/ExperiencePillars.tsx",
+          "lines": [
+            96
+          ]
+        },
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            373,
+            586
+          ]
+        },
+        {
+          "file": "src/lib/queries/site-images.ts",
+          "lines": [
+            177,
+            418,
+            488
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/components/home/ExperiencePillars.tsx",
+        "src/lib/data/seed-dataset.ts",
+        "src/lib/queries/site-images.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/destinations/sigiriya/gallery-1.avif",
+      "filename": "gallery-1.avif",
+      "extension": "avif",
+      "sizeBytes": 362092,
+      "dimensions": {
+        "width": 1200,
+        "height": 1800,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/sigiriya/gallery-1.jpg",
+      "filename": "gallery-1.jpg",
+      "extension": "jpg",
+      "sizeBytes": 13624742,
+      "dimensions": {
+        "width": 4000,
+        "height": 6000,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/sigiriya/gallery-1.webp",
+      "filename": "gallery-1.webp",
+      "extension": "webp",
+      "sizeBytes": 350786,
+      "dimensions": {
+        "width": 1200,
+        "height": 1800,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            16
+          ]
+        },
+        {
+          "file": "src/lib/queries/site-images.ts",
+          "lines": [
+            228
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/lib/data/seed-dataset.ts",
+        "src/lib/queries/site-images.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/destinations/sigiriya/gallery-2.avif",
+      "filename": "gallery-2.avif",
+      "extension": "avif",
+      "sizeBytes": 64394,
+      "dimensions": {
+        "width": 1200,
+        "height": 800,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/sigiriya/gallery-2.jpg",
+      "filename": "gallery-2.jpg",
+      "extension": "jpg",
+      "sizeBytes": 5966372,
+      "dimensions": {
+        "width": 5616,
+        "height": 3744,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/sigiriya/gallery-2.webp",
+      "filename": "gallery-2.webp",
+      "extension": "webp",
+      "sizeBytes": 43724,
+      "dimensions": {
+        "width": 1200,
+        "height": 800,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            23
+          ]
+        },
+        {
+          "file": "src/lib/queries/site-images.ts",
+          "lines": [
+            244
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/lib/data/seed-dataset.ts",
+        "src/lib/queries/site-images.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/destinations/sigiriya/gallery-3.avif",
+      "filename": "gallery-3.avif",
+      "extension": "avif",
+      "sizeBytes": 246861,
+      "dimensions": {
+        "width": 1200,
+        "height": 800,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/sigiriya/gallery-3.jpg",
+      "filename": "gallery-3.jpg",
+      "extension": "jpg",
+      "sizeBytes": 4972281,
+      "dimensions": {
+        "width": 3888,
+        "height": 2592,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/sigiriya/gallery-3.webp",
+      "filename": "gallery-3.webp",
+      "extension": "webp",
+      "sizeBytes": 215782,
+      "dimensions": {
+        "width": 1200,
+        "height": 800,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            30
+          ]
+        },
+        {
+          "file": "src/lib/queries/site-images.ts",
+          "lines": [
+            260
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/lib/data/seed-dataset.ts",
+        "src/lib/queries/site-images.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/destinations/sigiriya/hero.avif",
+      "filename": "hero.avif",
+      "extension": "avif",
+      "sizeBytes": 680266,
+      "dimensions": {
+        "width": 1920,
+        "height": 1440,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/sigiriya/hero.jpg",
+      "filename": "hero.jpg",
+      "extension": "jpg",
+      "sizeBytes": 3445975,
+      "dimensions": {
+        "width": 3264,
+        "height": 2448,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/sigiriya/hero.webp",
+      "filename": "hero.webp",
+      "extension": "webp",
+      "sizeBytes": 635604,
+      "dimensions": {
+        "width": 1920,
+        "height": 1440,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/app/admin/destinations/page.tsx",
+          "lines": [
+            192
+          ]
+        },
+        {
+          "file": "src/app/admin/packages/page.tsx",
+          "lines": [
+            354,
+            828
+          ]
+        },
+        {
+          "file": "src/app/admin/page.tsx",
+          "lines": [
+            280
+          ]
+        },
+        {
+          "file": "src/app/api/admin/destinations/route.ts",
+          "lines": [
+            141,
+            219
+          ]
+        },
+        {
+          "file": "src/components/home/HeroSection.tsx",
+          "lines": [
+            25
+          ]
+        },
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            8,
+            465,
+            472,
+            594
+          ]
+        },
+        {
+          "file": "src/lib/data/stories-dataset.ts",
+          "lines": [
+            47
+          ]
+        },
+        {
+          "file": "src/lib/queries/site-images.ts",
+          "lines": [
+            15,
+            212,
+            472,
+            651
+          ]
+        },
+        {
+          "file": "src/lib/queries/tours.ts",
+          "lines": [
+            103
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/app/admin/destinations/page.tsx",
+        "src/app/admin/packages/page.tsx",
+        "src/app/admin/page.tsx",
+        "src/app/api/admin/destinations/route.ts",
+        "src/components/home/HeroSection.tsx",
+        "src/lib/data/seed-dataset.ts",
+        "src/lib/data/stories-dataset.ts",
+        "src/lib/queries/site-images.ts",
+        "src/lib/queries/tours.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/destinations/trincomalee/hero.avif",
+      "filename": "hero.avif",
+      "extension": "avif",
+      "sizeBytes": 246380,
+      "dimensions": {
+        "width": 1920,
+        "height": 876,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/trincomalee/hero.jpg",
+      "filename": "hero.jpg",
+      "extension": "jpg",
+      "sizeBytes": 1942261,
+      "dimensions": {
+        "width": 4000,
+        "height": 1824,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/trincomalee/hero.webp",
+      "filename": "hero.webp",
+      "extension": "webp",
+      "sizeBytes": 218314,
+      "dimensions": {
+        "width": 1920,
+        "height": 876,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            416
+          ]
+        },
+        {
+          "file": "src/lib/queries/site-images.ts",
+          "lines": [
+            436
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/lib/data/seed-dataset.ts",
+        "src/lib/queries/site-images.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/destinations/yala-national-park/hero.avif",
+      "filename": "hero.avif",
+      "extension": "avif",
+      "sizeBytes": 705963,
+      "dimensions": {
+        "width": 1920,
+        "height": 1275,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/yala-national-park/hero.jpg",
+      "filename": "hero.jpg",
+      "extension": "jpg",
+      "sizeBytes": 9199214,
+      "dimensions": {
+        "width": 4288,
+        "height": 2848,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/destinations/yala-national-park/hero.webp",
+      "filename": "hero.webp",
+      "extension": "webp",
+      "sizeBytes": 627650,
+      "dimensions": {
+        "width": 1920,
+        "height": 1275,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/components/home/ExperiencePillars.tsx",
+          "lines": [
+            30
+          ]
+        },
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            330,
+            863,
+            870
+          ]
+        },
+        {
+          "file": "src/lib/queries/site-images.ts",
+          "lines": [
+            81,
+            400,
+            536
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/components/home/ExperiencePillars.tsx",
+        "src/lib/data/seed-dataset.ts",
+        "src/lib/queries/site-images.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/experiences/ceylon-tea-picking-factory/hero.avif",
+      "filename": "hero.avif",
+      "extension": "avif",
+      "sizeBytes": 577296,
+      "dimensions": {
+        "width": 1920,
+        "height": 1282,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/experiences/ceylon-tea-picking-factory/hero.jpg",
+      "filename": "hero.jpg",
+      "extension": "jpg",
+      "sizeBytes": 6712618,
+      "dimensions": {
+        "width": 4091,
+        "height": 2731,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/experiences/ceylon-tea-picking-factory/hero.webp",
+      "filename": "hero.webp",
+      "extension": "webp",
+      "sizeBytes": 518942,
+      "dimensions": {
+        "width": 1920,
+        "height": 1282,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            1134
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/lib/data/seed-dataset.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/experiences/galle-fort-colonial-walk/hero.avif",
+      "filename": "hero.avif",
+      "extension": "avif",
+      "sizeBytes": 921787,
+      "dimensions": {
+        "width": 1920,
+        "height": 1439,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/experiences/galle-fort-colonial-walk/hero.jpg",
+      "filename": "hero.jpg",
+      "extension": "jpg",
+      "sizeBytes": 12238991,
+      "dimensions": {
+        "width": 4056,
+        "height": 3040,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/experiences/galle-fort-colonial-walk/hero.webp",
+      "filename": "hero.webp",
+      "extension": "webp",
+      "sizeBytes": 829080,
+      "dimensions": {
+        "width": 1920,
+        "height": 1439,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            1163
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/lib/data/seed-dataset.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/experiences/kandy-ella-scenic-train/hero.avif",
+      "filename": "hero.avif",
+      "extension": "avif",
+      "sizeBytes": 595800,
+      "dimensions": {
+        "width": 1920,
+        "height": 1080,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/experiences/kandy-ella-scenic-train/hero.jpg",
+      "filename": "hero.jpg",
+      "extension": "jpg",
+      "sizeBytes": 827288,
+      "dimensions": {
+        "width": 1920,
+        "height": 1080,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/experiences/kandy-ella-scenic-train/hero.webp",
+      "filename": "hero.webp",
+      "extension": "webp",
+      "sizeBytes": 609670,
+      "dimensions": {
+        "width": 1920,
+        "height": 1080,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            1047
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/lib/data/seed-dataset.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/experiences/minneriya-elephant-gathering/hero.avif",
+      "filename": "hero.avif",
+      "extension": "avif",
+      "sizeBytes": 154226,
+      "dimensions": {
+        "width": 1920,
+        "height": 1280,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/experiences/minneriya-elephant-gathering/hero.jpg",
+      "filename": "hero.jpg",
+      "extension": "jpg",
+      "sizeBytes": 5966372,
+      "dimensions": {
+        "width": 5616,
+        "height": 3744,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/experiences/minneriya-elephant-gathering/hero.webp",
+      "filename": "hero.webp",
+      "extension": "webp",
+      "sizeBytes": 91550,
+      "dimensions": {
+        "width": 1920,
+        "height": 1280,
+        "format": "webp"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/experiences/minneriya-elephants.avif",
+      "filename": "minneriya-elephants.avif",
+      "extension": "avif",
+      "sizeBytes": 64394,
+      "dimensions": {
+        "width": 1200,
+        "height": 800,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/experiences/minneriya-elephants.jpg",
+      "filename": "minneriya-elephants.jpg",
+      "extension": "jpg",
+      "sizeBytes": 5966372,
+      "dimensions": {
+        "width": 5616,
+        "height": 3744,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/experiences/minneriya-elephants.webp",
+      "filename": "minneriya-elephants.webp",
+      "extension": "webp",
+      "sizeBytes": 43724,
+      "dimensions": {
+        "width": 1200,
+        "height": 800,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/components/home/HeroSection.tsx",
+          "lines": [
+            40
+          ]
+        },
+        {
+          "file": "src/lib/data/stories-dataset.ts",
+          "lines": [
+            173
+          ]
+        },
+        {
+          "file": "src/lib/queries/site-images.ts",
+          "lines": [
+            63,
+            666
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/components/home/HeroSection.tsx",
+        "src/lib/data/stories-dataset.ts",
+        "src/lib/queries/site-images.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/experiences/mirissa-whale-watching-cruise/hero.avif",
+      "filename": "hero.avif",
+      "extension": "avif",
+      "sizeBytes": 488328,
+      "dimensions": {
+        "width": 1920,
+        "height": 1080,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/experiences/mirissa-whale-watching-cruise/hero.jpg",
+      "filename": "hero.jpg",
+      "extension": "jpg",
+      "sizeBytes": 4663719,
+      "dimensions": {
+        "width": 6014,
+        "height": 3383,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/experiences/mirissa-whale-watching-cruise/hero.webp",
+      "filename": "hero.webp",
+      "extension": "webp",
+      "sizeBytes": 440378,
+      "dimensions": {
+        "width": 1920,
+        "height": 1080,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            1105
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/lib/data/seed-dataset.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/experiences/mirissa-whale.avif",
+      "filename": "mirissa-whale.avif",
+      "extension": "avif",
+      "sizeBytes": 219669,
+      "dimensions": {
+        "width": 1200,
+        "height": 675,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/experiences/mirissa-whale.jpg",
+      "filename": "mirissa-whale.jpg",
+      "extension": "jpg",
+      "sizeBytes": 4663719,
+      "dimensions": {
+        "width": 6014,
+        "height": 3383,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/experiences/mirissa-whale.webp",
+      "filename": "mirissa-whale.webp",
+      "extension": "webp",
+      "sizeBytes": 199382,
+      "dimensions": {
+        "width": 1200,
+        "height": 675,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/components/home/ExperiencePillars.tsx",
+          "lines": [
+            41
+          ]
+        },
+        {
+          "file": "src/lib/queries/site-images.ts",
+          "lines": [
+            97
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/components/home/ExperiencePillars.tsx",
+        "src/lib/queries/site-images.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/experiences/sigiriya-sunrise-climb/hero.avif",
+      "filename": "hero.avif",
+      "extension": "avif",
+      "sizeBytes": 784606,
+      "dimensions": {
+        "width": 1920,
+        "height": 2880,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/experiences/sigiriya-sunrise-climb/hero.jpg",
+      "filename": "hero.jpg",
+      "extension": "jpg",
+      "sizeBytes": 13624742,
+      "dimensions": {
+        "width": 4000,
+        "height": 6000,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/experiences/sigiriya-sunrise-climb/hero.webp",
+      "filename": "hero.webp",
+      "extension": "webp",
+      "sizeBytes": 718402,
+      "dimensions": {
+        "width": 1920,
+        "height": 2880,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/components/home/ExperiencePillars.tsx",
+          "lines": [
+            74
+          ]
+        },
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            1018
+          ]
+        },
+        {
+          "file": "src/lib/queries/site-images.ts",
+          "lines": [
+            145
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/components/home/ExperiencePillars.tsx",
+        "src/lib/data/seed-dataset.ts",
+        "src/lib/queries/site-images.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/experiences/yala-leopard-jeep-safari/hero.avif",
+      "filename": "hero.avif",
+      "extension": "avif",
+      "sizeBytes": 705963,
+      "dimensions": {
+        "width": 1920,
+        "height": 1275,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/experiences/yala-leopard-jeep-safari/hero.jpg",
+      "filename": "hero.jpg",
+      "extension": "jpg",
+      "sizeBytes": 9199214,
+      "dimensions": {
+        "width": 4288,
+        "height": 2848,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/experiences/yala-leopard-jeep-safari/hero.webp",
+      "filename": "hero.webp",
+      "extension": "webp",
+      "sizeBytes": 627650,
+      "dimensions": {
+        "width": 1920,
+        "height": 1275,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/lib/data/seed-dataset.ts",
+          "lines": [
+            1076
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/lib/data/seed-dataset.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/hero/hikkaduwa.avif",
+      "filename": "hikkaduwa.avif",
+      "extension": "avif",
+      "sizeBytes": 569522,
+      "dimensions": {
+        "width": 1920,
+        "height": 1440,
+        "format": "heif"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/hero/hikkaduwa.jpg",
+      "filename": "hikkaduwa.jpg",
+      "extension": "jpg",
+      "sizeBytes": 2740177,
+      "dimensions": {
+        "width": 4032,
+        "height": 3024,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/hero/hikkaduwa.webp",
+      "filename": "hikkaduwa.webp",
+      "extension": "webp",
+      "sizeBytes": 516806,
+      "dimensions": {
+        "width": 1920,
+        "height": 1440,
+        "format": "webp"
+      },
+      "directUsages": [
+        {
+          "file": "src/components/home/HeroSection.tsx",
+          "lines": [
+            35
+          ]
+        },
+        {
+          "file": "src/lib/queries/site-images.ts",
+          "lines": [
+            47,
+            454,
+            661
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/components/home/HeroSection.tsx",
+        "src/lib/queries/site-images.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/images/logo.jpg",
+      "filename": "logo.jpg",
+      "extension": "jpg",
+      "sizeBytes": 192433,
+      "dimensions": {
+        "width": 1024,
+        "height": 1024,
+        "format": "jpeg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/images/logo.png",
+      "filename": "logo.png",
+      "extension": "png",
+      "sizeBytes": 192433,
+      "dimensions": {
+        "width": 1024,
+        "height": 1024,
+        "format": "jpeg"
+      },
+      "directUsages": [
+        {
+          "file": "src/app/about/page.tsx",
+          "lines": [
+            51
+          ]
+        },
+        {
+          "file": "src/app/admin/layout.tsx",
+          "lines": [
+            152,
+            211
+          ]
+        },
+        {
+          "file": "src/app/admin/login/page.tsx",
+          "lines": [
+            75
+          ]
+        },
+        {
+          "file": "src/app/layout.tsx",
+          "lines": [
+            56
+          ]
+        },
+        {
+          "file": "src/components/home/HeroSection.tsx",
+          "lines": [
+            255
+          ]
+        },
+        {
+          "file": "src/components/layout/Footer.tsx",
+          "lines": [
+            81
+          ]
+        },
+        {
+          "file": "src/components/layout/Header.tsx",
+          "lines": [
+            48
+          ]
+        },
+        {
+          "file": "src/components/layout/MobileNav.tsx",
+          "lines": [
+            55
+          ]
+        },
+        {
+          "file": "src/lib/queries/site-settings.ts",
+          "lines": [
+            21
+          ]
+        }
+      ],
+      "dynamicUsages": [],
+      "usageFiles": [
+        "src/app/about/page.tsx",
+        "src/app/admin/layout.tsx",
+        "src/app/admin/login/page.tsx",
+        "src/app/layout.tsx",
+        "src/components/home/HeroSection.tsx",
+        "src/components/layout/Footer.tsx",
+        "src/components/layout/Header.tsx",
+        "src/components/layout/MobileNav.tsx",
+        "src/lib/queries/site-settings.ts"
+      ],
+      "status": "referenced-or-dynamic"
+    },
+    {
+      "path": "/next.svg",
+      "filename": "next.svg",
+      "extension": "svg",
+      "sizeBytes": 1375,
+      "dimensions": {
+        "viewBox": "0 0 394 80",
+        "format": "svg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/vercel.svg",
+      "filename": "vercel.svg",
+      "extension": "svg",
+      "sizeBytes": 128,
+      "dimensions": {
+        "viewBox": "0 0 1155 1000",
+        "format": "svg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    },
+    {
+      "path": "/window.svg",
+      "filename": "window.svg",
+      "extension": "svg",
+      "sizeBytes": 385,
+      "dimensions": {
+        "viewBox": "0 0 16 16",
+        "format": "svg"
+      },
+      "directUsages": [],
+      "dynamicUsages": [],
+      "usageFiles": [],
+      "status": "no-source-reference-found"
+    }
+  ]
+}

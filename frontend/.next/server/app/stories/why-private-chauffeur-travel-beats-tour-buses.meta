@@ -1,0 +1,40 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/stories/layout,_N_T_/stories/[slug]/layout,_N_T_/stories/[slug]/page,_N_T_/stories/why-private-chauffeur-travel-beats-tour-buses"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/_index",
+    "/stories/$d$slug/__PAGE__"
+  ],
+  "prefetchHints": {
+    "hints": 0,
+    "slots": {
+      "children": {
+        "hints": 64,
+        "slots": {
+          "children": {
+            "hints": 96,
+            "slots": {
+              "children": {
+                "hints": 160,
+                "slots": null
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/04c776bb10dfb03d8953b55f0ddc30ca7b33c893ca0ce75ea0f93f022da9e2eb/$/stories/why-private-chauffeur-travel-beats-tour-buses",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/stories/[slug]/page"
+    },
+    "isFallback": false
+  }
+}

@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function: verify user has admin claim
+    function isAdmin() {
+      return request.auth != null && request.auth.token.admin == true;
+    }
+
+    // Site settings: hero, logo, contact information
+    match /siteSettings/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Destinations collection
+    match /destinations/{destId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Tours collection
+    match /tours/{tourId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Gallery and photo assets
+    match /gallery/{imageId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Customer inquiries: visitors can submit, only admin can read and manage
+    match /inquiries/{inquiryId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Admins registry metadata
+    match /admins/{adminId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Default deny for all other collections
+    match /{document=**} {
+      allow read: if false;
+      allow write: if false;
+    }
+  }
+}

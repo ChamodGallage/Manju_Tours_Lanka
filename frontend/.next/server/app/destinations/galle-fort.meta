@@ -1,0 +1,40 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/destinations/layout,_N_T_/destinations/[slug]/layout,_N_T_/destinations/[slug]/page,_N_T_/destinations/galle-fort"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/_index",
+    "/destinations/$d$slug/__PAGE__"
+  ],
+  "prefetchHints": {
+    "hints": 0,
+    "slots": {
+      "children": {
+        "hints": 64,
+        "slots": {
+          "children": {
+            "hints": 96,
+            "slots": {
+              "children": {
+                "hints": 160,
+                "slots": null
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "routeCache": {
+    "key": "/route-cache/APP_PAGE/25c68e34c47e6ae70cd56ceecf47f630b9ee6146338c9d4766abc7cecc509d14/$/destinations/galle-fort",
+    "owner": {
+      "kind": "APP_PAGE",
+      "sourceRoute": "/destinations/[slug]/page"
+    },
+    "isFallback": false
+  }
+}

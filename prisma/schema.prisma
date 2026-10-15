@@ -1,0 +1,202 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  STAFF
+}
+
+enum EnquiryStatus {
+  NEW
+  CONTACTED
+  PLANNING
+  QUOTE_SENT
+  AWAITING_CONFIRMATION
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  name         String
+  passwordHash String
+  role         Role     @default(STAFF)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Destination {
+  id              String   @id @default(uuid())
+  slug            String   @unique
+  name            String
+  tagline         String
+  region          String   // e.g. "Cultural Triangle", "Central Highlands", "South Coast"
+  heroImage       String
+  heroImageMetadata Json?
+  galleryImages   Json     // string[]
+  summary         String
+  content         String   @db.Text
+  highlights      Json     // string[]
+  bestTimeToVisit String
+  idealDuration   String   // e.g. "2 - 3 Days"
+  latitude        Float?
+  longitude       Float?
+  isFeatured      Boolean  @default(false)
+  displayOrder    Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  tours           TourDestination[]
+  experiences     Experience[]
+
+  @@index([region])
+  @@index([isFeatured])
+}
+
+model Experience {
+  id            String       @id @default(uuid())
+  slug          String       @unique
+  title         String
+  category      String       // e.g. "Wildlife Safari", "Cultural Heritage", "Scenic Rail", "Culinary"
+  heroImage     String
+  heroImageMetadata Json?
+  galleryImages Json @default("[]")
+  summary       String
+  description   String       @db.Text
+  duration      String       // e.g. "Half Day", "3 Hours"
+  location      String
+  destinationId String?
+  destination   Destination? @relation(fields: [destinationId], references: [id], onDelete: SetNull)
+  isFeatured    Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([category])
+  @@index([isFeatured])
+}
+
+model Tour {
+  id             String            @id @default(uuid())
+  slug           String            @unique
+  title          String
+  tagline        String
+  durationDays   Int
+  durationNights Int
+  travelStyle    String            // "Private Chauffeur", "Cultural & Heritage", "Wildlife & Beach", "Family", "Honeymoon"
+  overview       String            @db.Text
+  highlights     Json              // string[]
+  itinerary      Json              // [{ day: 1, title: "...", description: "...", accommodation: "..." }]
+  inclusions     Json              // string[]
+  exclusions     Json              // string[]
+  startingPrice  String?           // Placeholder: "Request a Quote"
+  heroImage      String
+  heroImageMetadata Json?
+  galleryImages  Json              // string[]
+  isFeatured     Boolean           @default(false)
+  displayOrder   Int               @default(0)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  destinations   TourDestination[]
+  enquiries      TourEnquiry[]
+  bookings       Booking[]
+  reviews        Review[]
+
+  @@index([travelStyle])
+  @@index([isFeatured])
+}
+
+model TourDestination {
+  tourId        String
+  destinationId String
+  tour          Tour        @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Cascade)
+
+  @@id([tourId, destinationId])
+}
+
+model TourEnquiry {
+  id               String        @id @default(uuid())
+  tourId           String?
+  tour             Tour?         @relation(fields: [tourId], references: [id], onDelete: SetNull)
+  name             String
+  email            String
+  phone            String
+  country          String
+  travelStartDate  String?
+  travelEndDate    String?
+  flexibleMonth    String?
+  numberOfAdults   Int           @default(2)
+  numberOfChildren Int           @default(0)
+  travelStyle      String?       // "Standard", "Comfort", "Luxury", "Custom"
+  message          String        @db.Text
+  status           EnquiryStatus @default(NEW)
+  source           String        @default("Website Enquiry Form")
+  ipHash           String?
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  booking          Booking?
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Booking {
+  id               String        @id @default(uuid())
+  referenceCode    String        @unique // e.g. "MTL-2026-001"
+  enquiryId        String?       @unique
+  enquiry          TourEnquiry?  @relation(fields: [enquiryId], references: [id], onDelete: SetNull)
+  tourId           String?
+  tour             Tour?         @relation(fields: [tourId], references: [id], onDelete: SetNull)
+  guestName        String
+  guestEmail       String
+  guestPhone       String
+  travelStartDate  DateTime
+  travelEndDate    DateTime
+  status           BookingStatus @default(PENDING)
+  totalAmount      Decimal?      @db.Decimal(10, 2)
+  currency         String        @default("USD")
+  specialRequests  String?       @db.Text
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  @@index([referenceCode])
+  @@index([status])
+}
+
+model Review {
+  id            String   @id @default(uuid())
+  tourId        String?
+  tour          Tour?    @relation(fields: [tourId], references: [id], onDelete: SetNull)
+  authorName    String
+  authorCountry String
+  rating        Int      @default(5)
+  reviewDate    String
+  travelMonth   String   // e.g. "January 2026"
+  title         String
+  comment       String   @db.Text
+  source        String   @default("TripAdvisor")
+  isVerified    Boolean  @default(true)
+  isFeatured    Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([isFeatured])
+}
