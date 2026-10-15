@@ -12,7 +12,7 @@ Copy `frontend/.env.example` to `frontend/.env.local` and fill in the six `NEXT_
 
 ## 3. Configure trusted backend credentials
 
-For local development, either log in with Google Application Default Credentials (`gcloud auth application-default login`) or create a service account key with Firestore access and store it outside the repository. Copy `backend/.env.example` to `backend/.env`, set `FIREBASE_PROJECT_ID`, and set `GOOGLE_APPLICATION_CREDENTIALS` to the absolute path of the key file.
+For local development, sign in with Google Application Default Credentials (`gcloud auth application-default login`). Ensure `FIREBASE_PROJECT_ID` in `backend/.env` matches `NEXT_PUBLIC_FIREBASE_PROJECT_ID` in `frontend/.env.local`. In deployed Google environments, use the attached service identity.
 
 Never put the service-account key in `frontend/.env.local`, commit it, or expose it through a `NEXT_PUBLIC_*` variable. Deployed Google Cloud services should use their attached service identity instead of a downloaded key.
 
