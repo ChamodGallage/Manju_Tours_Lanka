@@ -5,7 +5,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Lock, Mail, AlertCircle, ArrowLeft, Loader2 } from "lucide-react";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getFirebaseAuth, isFirebaseConfigured } from "@/lib/firebase/client";
+import { signInWithEmailAndPassword } from "firebase/auth";
 
 function LoginFormContent() {
   const router = useRouter();
@@ -34,23 +35,34 @@ function LoginFormContent() {
     }
 
     try {
-      const supabase = getSupabaseBrowserClient();
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
-        password: password,
-      });
-
-      if (error) {
-        setFailedAttempts((prev) => prev + 1);
-        throw new Error(error.message || "Invalid administrator credentials.");
+      const auth = getFirebaseAuth();
+      if (!auth) {
+        throw new Error(
+          "Firebase Authentication is not configured. Please add the 6 NEXT_PUBLIC_FIREBASE_* keys to .env.local."
+        );
       }
+      const userCredential = await signInWithEmailAndPassword(auth, email.trim(), password);
 
-      if (data?.user) {
+      if (userCredential?.user) {
         router.push(redirectPath);
         router.refresh();
       }
     } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : "Failed to sign in.";
+      setFailedAttempts((prev) => prev + 1);
+      let msg = "Failed to sign in.";
+      if (err instanceof Error) {
+        if (
+          err.message.includes("auth/invalid-credential") ||
+          err.message.includes("auth/wrong-password") ||
+          err.message.includes("auth/user-not-found")
+        ) {
+          msg = "Invalid administrator email or password.";
+        } else if (err.message.includes("auth/too-many-requests")) {
+          msg = "Too many failed attempts. Access to this account has been temporarily disabled. Please try again later.";
+        } else {
+          msg = err.message;
+        }
+      }
       setErrorMessage(msg);
     } finally {
       setLoading(false);
@@ -90,12 +102,12 @@ function LoginFormContent() {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4">
         <div className="bg-white py-8 px-6 shadow-xl rounded-3xl border border-[#E8E2D2] sm:px-10">
-          {setupNotice === "setup_required" && (
+          {(setupNotice === "setup_required" || !isFirebaseConfigured()) && (
             <div className="mb-6 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-800 text-xs flex items-start gap-3">
               <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
               <div>
-                <strong className="block font-bold">Supabase Setup Notice:</strong>
-                Please ensure <code className="bg-amber-100 px-1 py-0.5 rounded">NEXT_PUBLIC_SUPABASE_URL</code> and <code className="bg-amber-100 px-1 py-0.5 rounded">NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY</code> are configured in your <code className="bg-amber-100 px-1 py-0.5 rounded">.env.local</code>.
+                <strong className="block font-bold">Firebase Setup Notice:</strong>
+                Please ensure <code className="bg-amber-100 px-1 py-0.5 rounded">NEXT_PUBLIC_FIREBASE_API_KEY</code> and project credentials are configured in your <code className="bg-amber-100 px-1 py-0.5 rounded">.env.local</code>.
               </div>
             </div>
           )}

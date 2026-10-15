@@ -1,4 +1,5 @@
-import { getAdminSupabaseClient, getPublicSupabaseClient } from "../config/supabase.js";
+import { getBackendFirestore } from "../config/firebase.js";
+import { doc, getDoc, setDoc } from "firebase/firestore";
 import type { SiteSettings } from "../types/database.types.js";
 import { logger } from "../utils/logger.js";
 
@@ -32,43 +33,41 @@ let runtimeSettings: SiteSettings = { ...DEFAULT_SETTINGS };
 
 export const settingsService = {
   async get(): Promise<SiteSettings> {
-    const client = getPublicSupabaseClient() || getAdminSupabaseClient();
-    if (client) {
+    const db = getBackendFirestore();
+    if (db) {
       try {
-        const { data, error } = await client.from("site_settings").select("*").eq("id", "global").maybeSingle();
-        if (!error && data) {
-          return data as SiteSettings;
+        const docRef = doc(db, "siteSettings", "default");
+        const snap = await getDoc(docRef);
+        if (snap.exists()) {
+          runtimeSettings = {
+            ...DEFAULT_SETTINGS,
+            ...(snap.data() as Partial<SiteSettings>),
+          };
+          return runtimeSettings;
         }
       } catch (err) {
-        logger.warn("Supabase settings error:", err);
+        logger.warn("Firestore settings notice, using default settings:", err);
       }
     }
     return runtimeSettings;
   },
 
   async update(updates: Partial<SiteSettings>): Promise<SiteSettings> {
-    const client = getAdminSupabaseClient();
-    if (client) {
-      try {
-        const { data, error } = await client
-          .from("site_settings")
-          .upsert({ ...updates, id: "global", updated_at: new Date().toISOString() })
-          .select()
-          .single();
-        if (!error && data) {
-          runtimeSettings = data as SiteSettings;
-          return runtimeSettings;
-        }
-      } catch (err) {
-        logger.warn("Supabase settings update error:", err);
-      }
-    }
-
     runtimeSettings = {
       ...runtimeSettings,
       ...updates,
       updated_at: new Date().toISOString(),
     };
+
+    const db = getBackendFirestore();
+    if (db) {
+      try {
+        await setDoc(doc(db, "siteSettings", "default"), runtimeSettings, { merge: true });
+      } catch (err) {
+        logger.warn("Firestore settings update notice:", err);
+      }
+    }
+
     return runtimeSettings;
   },
 };

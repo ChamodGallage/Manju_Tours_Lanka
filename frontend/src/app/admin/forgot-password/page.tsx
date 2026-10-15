@@ -3,7 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Loader2, Mail } from "lucide-react";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getFirebaseAuth } from "@/lib/firebase/client";
+import { sendPasswordResetEmail } from "firebase/auth";
 
 export default function AdminForgotPasswordPage() {
   const [email, setEmail] = useState("");
@@ -16,14 +17,14 @@ export default function AdminForgotPasswordPage() {
     setLoading(true);
     setError("");
     try {
-      const supabase = getSupabaseBrowserClient();
-      const { error: resetError } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-        redirectTo: `${window.location.origin}/admin/reset-password`,
-      });
-      if (resetError) throw resetError;
+      const auth = getFirebaseAuth();
+      if (!auth) {
+        throw new Error("Firebase Authentication is not configured.");
+      }
+      await sendPasswordResetEmail(auth, email.trim());
       setSent(true);
     } catch {
-      setError("Password reset could not be started. Check the Supabase configuration and try again.");
+      setError("Password reset could not be started. Check the Firebase configuration and try again.");
     } finally {
       setLoading(false);
     }
@@ -36,7 +37,7 @@ export default function AdminForgotPasswordPage() {
           <ArrowLeft className="h-4 w-4" /> Back to admin login
         </Link>
         <h1 className="text-2xl font-extrabold text-[#17202A]">Reset your password</h1>
-        <p className="mt-2 text-sm text-[#5B6770]">Enter your administrator email and Supabase will send a recovery link.</p>
+        <p className="mt-2 text-sm text-[#5B6770]">Enter your administrator email and Firebase will send a recovery link.</p>
         {sent ? (
           <p role="status" className="mt-6 rounded-xl bg-emerald-50 p-4 text-sm text-emerald-800">
             If that account is eligible, a password reset email has been sent.

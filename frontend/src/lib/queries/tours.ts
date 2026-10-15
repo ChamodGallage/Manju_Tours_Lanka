@@ -1,9 +1,8 @@
-import { createClient } from "@supabase/supabase-js";
-import { supabaseContentFetch } from "@/lib/supabase/fetch";
-import prisma from "../db";
+import { getFirebaseFirestore } from "@/lib/firebase/client";
+import { collection, doc, getDoc, getDocs, query, where, orderBy } from "firebase/firestore";
 import { mockTours } from "../data/mock-data";
 import { getSiteImages } from "./site-images";
-import type { Database, TourPackage, ItineraryDay, PackageFaq } from "@/types/database.types";
+import type { TourPackage, ItineraryDay, PackageFaq } from "@/types/database.types";
 
 export interface FormattedTour {
   id: string;
@@ -243,47 +242,28 @@ async function enrichToursWithSiteImages(tours: FormattedTour[]): Promise<Format
  * By default returns published tours, or all if includeUnpublished is true (for admin).
  */
 export async function getAllTours(options: { includeUnpublished?: boolean } = {}): Promise<FormattedTour[]> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const db = getFirebaseFirestore();
 
-  if (url && publishableKey) {
+  if (db) {
     try {
-      const supabase = createClient<Database>(url, publishableKey, {
-        global: { fetch: supabaseContentFetch },
-      });
-      let query = supabase.from("tour_packages").select("*");
+      const toursCol = collection(db, "tours");
+      const q = options.includeUnpublished
+        ? query(toursCol, orderBy("display_order", "asc"))
+        : query(toursCol, where("is_published", "==", true), orderBy("display_order", "asc"));
 
-      if (!options.includeUnpublished) {
-        query = query.eq("is_published", true);
-      }
-
-      const { data, error } = await query.order("display_order", { ascending: true }).retry(false);
-
-      if (!error && data && data.length > 0) {
-        const formatted = (data as unknown as TourPackage[]).map(formatTourPackage);
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const formatted = snap.docs.map((d) =>
+          formatTourPackage(d.data() as Partial<TourPackage> & { slug: string; title: string })
+        );
         return enrichToursWithSiteImages(formatted);
       }
     } catch (err) {
-      console.warn("Supabase tour_packages query notice, checking fallback:", err);
+      console.warn("Firestore tours query notice, checking fallback:", err);
     }
   }
 
-  // Fallback 1: Try Prisma if configured
-  try {
-    const tours = await prisma.tour.findMany({
-      orderBy: { displayOrder: "asc" },
-    });
-    if (tours.length > 0) {
-      const formatted = (tours as unknown as Array<Record<string, unknown>>).map((t) =>
-        formatTourPackage(t as unknown as TourPackage)
-      );
-      return enrichToursWithSiteImages(formatted);
-    }
-  } catch {
-    // Expected when DATABASE_URL is not set
-  }
-
-  // Fallback 2: Static Seed Dataset
+  // Fallback: Static Seed Dataset
   let list = mockTours.map((t) => formatTourPackage(t as unknown as TourPackage));
   if (!options.includeUnpublished) {
     list = list.filter((t) => t.isPublished);
@@ -295,28 +275,26 @@ export async function getAllTours(options: { includeUnpublished?: boolean } = {}
  * Fetch featured tour packages for the homepage showcase
  */
 export async function getFeaturedTours(): Promise<FormattedTour[]> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const db = getFirebaseFirestore();
 
-  if (url && publishableKey) {
+  if (db) {
     try {
-      const supabase = createClient<Database>(url, publishableKey, {
-        global: { fetch: supabaseContentFetch },
-      });
-      const { data, error } = await supabase
-        .from("tour_packages")
-        .select("*")
-        .eq("is_published", true)
-        .eq("is_featured", true)
-        .order("display_order", { ascending: true })
-        .retry(false);
-
-      if (!error && data && data.length > 0) {
-        const formatted = (data as unknown as TourPackage[]).map(formatTourPackage);
+      const toursCol = collection(db, "tours");
+      const q = query(
+        toursCol,
+        where("is_published", "==", true),
+        where("is_featured", "==", true),
+        orderBy("display_order", "asc")
+      );
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const formatted = snap.docs.map((d) =>
+          formatTourPackage(d.data() as Partial<TourPackage> & { slug: string; title: string })
+        );
         return enrichToursWithSiteImages(formatted);
       }
     } catch (err) {
-      console.warn("Supabase featured tour_packages query notice, checking fallback:", err);
+      console.warn("Firestore featured tours query notice, checking fallback:", err);
     }
   }
 
@@ -331,28 +309,28 @@ export async function getFeaturedTours(): Promise<FormattedTour[]> {
  * Fetch a single tour package by its unique slug
  */
 export async function getTourBySlug(slug: string): Promise<FormattedTour | null> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const db = getFirebaseFirestore();
 
-  if (url && publishableKey) {
+  if (db) {
     try {
-      const supabase = createClient<Database>(url, publishableKey, {
-        global: { fetch: supabaseContentFetch },
-      });
-      const { data, error } = await supabase
-        .from("tour_packages")
-        .select("*")
-        .eq("slug", slug)
-        .maybeSingle()
-        .retry(false);
+      const docRef = doc(db, "tours", slug);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const formatted = formatTourPackage(docSnap.data() as Partial<TourPackage> & { slug: string; title: string });
+        const enriched = await enrichToursWithSiteImages([formatted]);
+        return enriched[0];
+      }
 
-      if (!error && data) {
-        const formatted = formatTourPackage(data as unknown as TourPackage);
+      // Query by slug field if key differed
+      const q = query(collection(db, "tours"), where("slug", "==", slug));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const formatted = formatTourPackage(snap.docs[0].data() as Partial<TourPackage> & { slug: string; title: string });
         const enriched = await enrichToursWithSiteImages([formatted]);
         return enriched[0];
       }
     } catch (err) {
-      console.warn(`Supabase tour_packages query for ${slug} notice:`, err);
+      console.warn(`Firestore tour query for ${slug} notice:`, err);
     }
   }
 
@@ -373,14 +351,12 @@ export async function getToursByDestination(destinationSlugOrName: string): Prom
   const searchLower = destinationSlugOrName.toLowerCase().replace(/-/g, " ");
 
   return allTours.filter((tour) => {
-    // Check destinations array
     if (
       tour.destinations &&
       tour.destinations.some((d) => d.toLowerCase().includes(searchLower) || searchLower.includes(d.toLowerCase()))
     ) {
       return true;
     }
-    // Check itinerary descriptions or highlights
     const inOverview = tour.overview.toLowerCase().includes(searchLower);
     const inHighlights = tour.highlights.some((h) => h.toLowerCase().includes(searchLower));
     const inItinerary = tour.itinerary.some(

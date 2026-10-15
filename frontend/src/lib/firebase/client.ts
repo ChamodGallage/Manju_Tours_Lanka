@@ -2,7 +2,7 @@ import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
 import { getAuth, type Auth } from "firebase/auth";
 import { getFirestore, type Firestore } from "firebase/firestore";
 
-type FirebaseWebConfig = {
+export type FirebaseWebConfig = {
   apiKey: string;
   authDomain: string;
   projectId: string;
@@ -20,7 +20,7 @@ const requiredConfig: Array<[keyof FirebaseWebConfig, string]> = [
   ["appId", "NEXT_PUBLIC_FIREBASE_APP_ID"],
 ];
 
-function readFirebaseConfig(): FirebaseWebConfig {
+export function getMissingFirebaseConfig(): string[] {
   const values = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
     authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
@@ -29,28 +29,60 @@ function readFirebaseConfig(): FirebaseWebConfig {
     messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
     appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   };
-  const missing = requiredConfig
-    .filter(([key]) => !values[key]?.trim())
-    .map(([, variable]) => variable);
 
+  return requiredConfig
+    .filter(([key]) => !values[key] || values[key]?.includes("paste-") || values[key]?.trim() === "")
+    .map(([, variable]) => variable);
+}
+
+export function isFirebaseConfigured(): boolean {
+  return getMissingFirebaseConfig().length === 0;
+}
+
+export function readFirebaseConfig(): FirebaseWebConfig | null {
+  const missing = getMissingFirebaseConfig();
   if (missing.length > 0) {
-    throw new Error(
-      `Firebase is not configured. Add these values from Firebase Console > Project settings > General > Your apps: ${missing.join(", ")}. Then restart the development server.`
-    );
+    return null;
   }
 
-  return values as FirebaseWebConfig;
+  return {
+    apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY!.trim(),
+    authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN!.trim(),
+    projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID!.trim(),
+    storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET!.trim(),
+    messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID!.trim(),
+    appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID!.trim(),
+  };
 }
 
-export function getFirebaseApp(): FirebaseApp {
+let cachedApp: FirebaseApp | null = null;
+let cachedAuth: Auth | null = null;
+let cachedFirestore: Firestore | null = null;
+
+export function getFirebaseApp(): FirebaseApp | null {
+  if (cachedApp) return cachedApp;
+  if (getApps().length > 0) {
+    cachedApp = getApp();
+    return cachedApp;
+  }
   const config = readFirebaseConfig();
-  return getApps().length > 0 ? getApp() : initializeApp(config);
+  if (!config) return null;
+  cachedApp = initializeApp(config);
+  return cachedApp;
 }
 
-export function getFirebaseAuth(): Auth {
-  return getAuth(getFirebaseApp());
+export function getFirebaseAuth(): Auth | null {
+  if (cachedAuth) return cachedAuth;
+  const app = getFirebaseApp();
+  if (!app) return null;
+  cachedAuth = getAuth(app);
+  return cachedAuth;
 }
 
-export function getFirebaseFirestore(): Firestore {
-  return getFirestore(getFirebaseApp());
+export function getFirebaseFirestore(): Firestore | null {
+  if (cachedFirestore) return cachedFirestore;
+  const app = getFirebaseApp();
+  if (!app) return null;
+  cachedFirestore = getFirestore(app);
+  return cachedFirestore;
 }

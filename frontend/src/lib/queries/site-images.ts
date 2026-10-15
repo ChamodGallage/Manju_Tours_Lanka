@@ -1,5 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
-import { supabaseContentFetch } from "@/lib/supabase/fetch";
+import { getFirebaseFirestore } from "@/lib/firebase/client";
+import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import type { SiteImage } from "@/types/database.types";
 
 /**
@@ -579,39 +579,28 @@ export interface SiteImageFilter {
  * if Supabase is offline or if no custom photos exist yet.
  */
 export async function getSiteImages(filter?: SiteImageFilter): Promise<SiteImage[]> {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const db = getFirebaseFirestore();
 
-  if (supabaseUrl && publishableKey) {
+  if (db) {
     try {
-      const client = createClient(supabaseUrl, publishableKey, {
-        global: { fetch: supabaseContentFetch },
-      });
-      let query = client.from("site_images").select("*");
+      const col = collection(db, "gallery");
+      let q = query(col, orderBy("display_order", "asc"));
 
       if (!filter?.includeInactive) {
-        query = query.eq("is_active", true);
-      }
-      if (filter?.pageKey) {
-        query = query.eq("page_key", filter.pageKey);
-      }
-      if (filter?.sectionKey) {
-        query = query.eq("section_key", filter.sectionKey);
-      }
-      if (filter?.destination) {
-        query = query.eq("destination", filter.destination);
-      }
-      if (filter?.category) {
-        query = query.eq("category", filter.category);
+        q = query(col, where("is_active", "==", true), orderBy("display_order", "asc"));
       }
 
-      const { data, error } = await query.order("display_order", { ascending: true }).retry(false);
-
-      if (!error && data && data.length > 0) {
-        return data as SiteImage[];
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        let results = snap.docs.map((d) => d.data() as SiteImage);
+        if (filter?.pageKey) results = results.filter((i) => i.page_key === filter.pageKey);
+        if (filter?.sectionKey) results = results.filter((i) => i.section_key === filter.sectionKey);
+        if (filter?.destination) results = results.filter((i) => i.destination === filter.destination);
+        if (filter?.category) results = results.filter((i) => i.category === filter.category);
+        if (results.length > 0) return results;
       }
     } catch (err) {
-      console.warn("Supabase site_images query warning, using local defaults:", err);
+      console.warn("Firestore gallery query notice, using local defaults:", err);
     }
   }
 

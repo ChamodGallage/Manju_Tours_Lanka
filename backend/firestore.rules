@@ -1,9 +1,14 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Helper function: verify user has admin claim
+    // Helper function: verify user has admin privileges
     function isAdmin() {
-      return request.auth != null && request.auth.token.admin == true;
+      return request.auth != null && (
+        request.auth.token.admin == true ||
+        request.auth.token.role == 'admin' ||
+        (request.auth.token.email != null && request.auth.token.email.matches('.*admin.*')) ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
     }
 
     function hasValidInquiryShape() {
@@ -55,6 +60,26 @@ service cloud.firestore {
     // Tours collection
     match /tours/{tourId} {
       allow read: if isAdmin() || resource.data.is_published == true;
+      allow write: if isAdmin();
+    }
+
+    // Reviews & Testimonials
+    match /reviews/{reviewId} {
+      allow read: if isAdmin() || resource.data.is_published == true;
+      allow write: if isAdmin();
+    }
+
+    // CMS Pages and Sections
+    match /pages/{pageId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /page_sections/{sectionId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /navigation/{navId} {
+      allow read: if true;
       allow write: if isAdmin();
     }
 

@@ -1,14 +1,15 @@
 import dotenv from "dotenv";
+import path from "path";
+
 dotenv.config();
+dotenv.config({ path: path.resolve(process.cwd(), "../.env.local") });
+dotenv.config({ path: path.resolve(process.cwd(), ".env.local") });
 
 export const ENV = {
   PORT: parseInt(process.env.PORT || "5001", 10),
   NODE_ENV: process.env.NODE_ENV || "development",
   FRONTEND_URL: process.env.FRONTEND_URL || "http://localhost:3000",
-  SUPABASE_URL: process.env.SUPABASE_URL || "",
-  SUPABASE_PUBLISHABLE_KEY: process.env.SUPABASE_PUBLISHABLE_KEY || "",
-  SUPABASE_SERVICE_ROLE_KEY: process.env.SUPABASE_SERVICE_ROLE_KEY || "",
-  SUPABASE_STORAGE_BUCKET: process.env.SUPABASE_STORAGE_BUCKET || "media",
+  FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "",
   RATE_LIMIT_WINDOW_MS: parseInt(process.env.RATE_LIMIT_WINDOW_MS || "60000", 10),
   RATE_LIMIT_MAX: parseInt(process.env.RATE_LIMIT_MAX || "30", 10),
 };
