@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { ContactFormSchema } from "@/lib/validations/contact";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { sanitizeString } from "@/lib/sanitize";
-import { insertTourEnquiry } from "@/lib/supabase/enquiries";
-import prisma from "@/lib/db";
+import { insertFirestoreInquiry } from "@/lib/firebase/enquiries";
 import { createHash } from "node:crypto";
 
 export async function POST(req: NextRequest) {
@@ -40,7 +39,7 @@ export async function POST(req: NextRequest) {
     const sanitizedMessage = sanitizeString(validData.message);
 
     const ipHash = createHash("sha256").update(ip).digest("hex");
-    const supabaseResult = await insertTourEnquiry({
+    const firestoreResult = await insertFirestoreInquiry({
       name: sanitizedName,
       email: sanitizedEmail,
       phone: sanitizedPhone || "Not provided",
@@ -54,34 +53,17 @@ export async function POST(req: NextRequest) {
       ip_hash: ipHash,
     });
 
-    let enquiryId = supabaseResult.success ? supabaseResult.id : undefined;
-    if (!enquiryId) {
-      try {
-        const saved = await prisma.tourEnquiry.create({
-          data: {
-            name: sanitizedName,
-            email: sanitizedEmail,
-            phone: sanitizedPhone || "Not provided",
-            country: "Not provided",
-            numberOfAdults: 1,
-            numberOfChildren: 0,
-            travelStyle: "Contact Form",
-            message: `Subject: ${sanitizedSubject}\n\n${sanitizedMessage}`,
-            status: "NEW",
-            source: "Contact Form",
-            ipHash,
-          },
-        });
-        enquiryId = saved.id;
-      } catch {
-        return NextResponse.json({ error: "We could not save your message right now. Please contact us on WhatsApp or try again shortly." }, { status: 503 });
-      }
+    if (!firestoreResult.success || !firestoreResult.id) {
+      return NextResponse.json(
+        { error: "We could not save your message right now. Please contact us on WhatsApp or try again shortly." },
+        { status: 503 }
+      );
     }
 
     return NextResponse.json({
       success: true,
       message: "Your message has been sent successfully. We will reply within a few hours!",
-      enquiryId,
+      enquiryId: firestoreResult.id,
     });
   } catch (error: unknown) {
     console.error("Error in /api/contact:", error);

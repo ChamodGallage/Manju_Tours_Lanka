@@ -1,5 +1,5 @@
 import { getBackendFirestore } from "../config/firebase.js";
-import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
+import { collection, getDocs, query, where, orderBy } from "../config/firestore.js";
 import { reviewsSeed } from "../data/seed-dataset.js";
 import type { ReviewItem } from "../types/database.types.js";
 import { logger } from "../utils/logger.js";

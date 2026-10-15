@@ -1,10 +1,11 @@
 {
   "name": "manju-tours-backend",
   "version": "1.0.0",
-  "description": "Manju Tours Lanka — Node.js Express REST API Backend with Supabase Integration",
+  "description": "Manju Tours Lanka — Node.js Express REST API Backend with Firebase Firestore",
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "seed:firestore": "tsx scripts/seed-firestore.ts",
     "build": "tsc",
     "start": "node dist/server.js",
     "test": "tsx tests/api.test.ts",
@@ -15,7 +16,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
-    "firebase": "^13.0.0",
+    "firebase-admin": "^13.7.0",
     "multer": "^1.4.5-lts.1",
     "zod": "^3.24.2"
   },

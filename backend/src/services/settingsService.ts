@@ -1,5 +1,5 @@
 import { getBackendFirestore } from "../config/firebase.js";
-import { doc, getDoc, setDoc } from "firebase/firestore";
+import { doc, getDoc, setDoc } from "../config/firestore.js";
 import type { SiteSettings } from "../types/database.types.js";
 import { logger } from "../utils/logger.js";
 

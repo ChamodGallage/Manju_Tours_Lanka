@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { getBackendFirestore, getFirebaseConfig } from "../config/firebase.js";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc } from "../config/firestore.js";
 import { ENV } from "../config/env.js";
 
 export const healthController = {

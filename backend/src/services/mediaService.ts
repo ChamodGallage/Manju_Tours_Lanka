@@ -1,5 +1,5 @@
 import { getBackendFirestore } from "../config/firebase.js";
-import { collection, doc, getDoc, getDocs, setDoc, deleteDoc, query, where, orderBy } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc, deleteDoc, query, where, orderBy } from "../config/firestore.js";
 import { DEFAULT_SITE_IMAGES } from "../data/site-images-dataset.js";
 import type { SiteImage } from "../types/database.types.js";
 import { logger } from "../utils/logger.js";

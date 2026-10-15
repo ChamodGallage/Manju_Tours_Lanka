@@ -1,6 +1,6 @@
 import crypto from "crypto";
 import { getBackendFirestore } from "../config/firebase.js";
-import { collection, doc, getDoc, getDocs, setDoc, deleteDoc, query, orderBy } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc, deleteDoc, query, orderBy } from "../config/firestore.js";
 import type { TourEnquiryRow } from "../types/database.types.js";
 import { logger } from "../utils/logger.js";
 import { sanitizeString } from "../utils/sanitize.js";

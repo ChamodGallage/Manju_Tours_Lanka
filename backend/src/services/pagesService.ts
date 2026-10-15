@@ -1,5 +1,5 @@
 import { getBackendFirestore } from "../config/firebase.js";
-import { collection, doc, getDoc, getDocs, setDoc, deleteDoc, query, where, orderBy } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc, deleteDoc, query, where, orderBy } from "../config/firestore.js";
 import {
   getRuntimePages,
   getRuntimePage,

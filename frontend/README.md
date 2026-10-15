@@ -2,13 +2,13 @@
 
 > **Positioning**: "Your Personal Sri Lanka Travel Planner"  
 > **Headquarters**: Galle Road, Hikkaduwa, Southern Province, Sri Lanka  
-> **Database Provider**: Supabase (`https://zazflloyuzjqeyxrcpwl.supabase.co`)
+> **Database Provider**: Firebase Cloud Firestore (see `../backend/FIRESTORE_SETUP.md`)
 
 ---
 
 ## 1. Project Architecture & Directory Structure
 
-The repository root contains the two application folders. Frontend code, assets, scripts, and documentation live under `frontend`; the API, database schemas, and backend configuration live under `backend`.
+The repository root contains the two application folders. Frontend code, assets, scripts, and documentation live under `frontend`; the API and backend configuration live under `backend`.
 
 ```text
 Manju_Tours_Lanka/
@@ -23,7 +23,6 @@ Manju_Tours_Lanka/
     ├── src/
     ├── tests/
     ├── supabase/
-    ├── prisma/
     └── package.json
 ```
 

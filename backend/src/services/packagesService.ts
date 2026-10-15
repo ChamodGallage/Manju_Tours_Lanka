@@ -1,5 +1,5 @@
 import { getBackendFirestore } from "../config/firebase.js";
-import { collection, doc, getDoc, getDocs, setDoc, deleteDoc, query, where, orderBy } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, setDoc, deleteDoc, query, where, orderBy } from "../config/firestore.js";
 import { toursSeed } from "../data/seed-dataset.js";
 import type { TourPackage } from "../types/database.types.js";
 import { logger } from "../utils/logger.js";

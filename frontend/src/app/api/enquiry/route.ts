@@ -3,8 +3,7 @@ import { createHash } from "node:crypto";
 import { TourEnquirySchema } from "@/lib/validations/enquiry";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { sanitizeString } from "@/lib/sanitize";
-import { insertTourEnquiry } from "@/lib/supabase/enquiries";
-import prisma from "@/lib/db";
+import { insertFirestoreInquiry } from "@/lib/firebase/enquiries";
 
 export async function POST(req: NextRequest) {
   try {
@@ -42,9 +41,8 @@ export async function POST(req: NextRequest) {
     const sanitizedCountry = sanitizeString(validData.country);
     const sanitizedMessage = sanitizeString(validData.message);
 
-    // 4. Save to Supabase tour_enquiries table
-    let savedEnquiryId: string | null = null;
-    const supabaseResult = await insertTourEnquiry({
+    // Save to the public-create, admin-managed Firestore inquiries collection.
+    const firestoreResult = await insertFirestoreInquiry({
       tour_id: validData.tourId || null,
       tour_title: validData.tourTitle || null,
       name: sanitizedName,
@@ -63,42 +61,17 @@ export async function POST(req: NextRequest) {
       ip_hash: createHash("sha256").update(ip).digest("hex"),
     });
 
-    if (supabaseResult.success && supabaseResult.id) {
-      savedEnquiryId = supabaseResult.id;
-    }
-
-    // Use Prisma only as a fallback if Supabase did not save the record.
-    if (!savedEnquiryId) {
-      try {
-        const prismaSaved = await prisma.tourEnquiry.create({
-        data: {
-          tourId: validData.tourId || null,
-          name: sanitizedName,
-          email: sanitizedEmail,
-          phone: sanitizedPhone,
-          country: sanitizedCountry,
-          travelStartDate: validData.travelStartDate || null,
-          travelEndDate: validData.travelEndDate || null,
-          flexibleMonth: validData.flexibleMonth || null,
-          numberOfAdults: validData.numberOfAdults,
-          numberOfChildren: validData.numberOfChildren,
-          travelStyle: validData.travelStyle || "Custom",
-          message: sanitizedMessage,
-          status: "NEW",
-          source: validData.tourTitle ? `Tour: ${validData.tourTitle}` : "Website Tour Enquiry",
-          ipHash: createHash("sha256").update(ip).digest("hex"),
-        },
-      });
-        savedEnquiryId = prismaSaved.id;
-      } catch {
-        return NextResponse.json({ error: "We could not save your enquiry right now. Please contact us on WhatsApp or try again shortly." }, { status: 503 });
-      }
+    if (!firestoreResult.success || !firestoreResult.id) {
+      return NextResponse.json(
+        { error: "We could not save your enquiry right now. Please contact us on WhatsApp or try again shortly." },
+        { status: 503 }
+      );
     }
 
     return NextResponse.json({
       success: true,
       message: "Your enquiry was submitted successfully. We will be in touch shortly!",
-      enquiryId: savedEnquiryId,
+      enquiryId: firestoreResult.id,
     });
   } catch (error: unknown) {
     console.error("Error in /api/enquiry:", error);
