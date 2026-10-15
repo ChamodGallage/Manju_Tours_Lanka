@@ -1,4 +1,5 @@
-import { getAdminSupabaseClient, getPublicSupabaseClient } from "../config/supabase.js";
+import { getBackendFirestore } from "../config/firebase.js";
+import { collection, doc, getDoc, getDocs, setDoc, deleteDoc, query, where, orderBy } from "firebase/firestore";
 import {
   getRuntimePages,
   getRuntimePage,
@@ -15,62 +16,57 @@ import { logger } from "../utils/logger.js";
 
 export const pagesService = {
   async getPages(): Promise<PageRecord[]> {
-    const client = getPublicSupabaseClient() || getAdminSupabaseClient();
-    if (client) {
+    const db = getBackendFirestore();
+    if (db) {
       try {
-        const { data, error } = await client
-          .from("pages")
-          .select("*")
-          .order("display_order", { ascending: true });
-        if (!error && data && data.length > 0) {
-          return data as PageRecord[];
+        const q = query(collection(db, "pages"), orderBy("display_order", "asc"));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          return snap.docs.map((d) => d.data() as PageRecord);
         }
       } catch (err) {
-        logger.warn("Supabase pages fetch error, using runtime CMS dataset:", err);
+        logger.warn("Firestore pages fetch notice, using runtime CMS dataset:", err);
       }
     }
     return getRuntimePages();
   },
 
   async getPage(keyOrSlug: string): Promise<PageRecord | null> {
-    const client = getPublicSupabaseClient() || getAdminSupabaseClient();
-    if (client) {
+    const db = getBackendFirestore();
+    if (db) {
       try {
-        const { data, error } = await client
-          .from("pages")
-          .select("*")
-          .or(`page_key.eq.${keyOrSlug},slug.eq.${keyOrSlug}`)
-          .maybeSingle();
-        if (!error && data) {
-          return data as PageRecord;
+        const docRef = doc(db, "pages", keyOrSlug);
+        const snap = await getDoc(docRef);
+        if (snap.exists()) {
+          return snap.data() as PageRecord;
+        }
+        const q = query(collection(db, "pages"), where("slug", "==", keyOrSlug));
+        const qSnap = await getDocs(q);
+        if (!qSnap.empty) {
+          return qSnap.docs[0].data() as PageRecord;
         }
       } catch (err) {
-        logger.warn(`Supabase getPage for '${keyOrSlug}' error:`, err);
+        logger.warn(`Firestore getPage for '${keyOrSlug}' notice:`, err);
       }
     }
     return getRuntimePage(keyOrSlug) || null;
   },
 
   async getPageSections(pageKey: string, publishedOnly = false): Promise<PageSectionItem[]> {
-    const client = getPublicSupabaseClient() || getAdminSupabaseClient();
-    if (client) {
+    const db = getBackendFirestore();
+    if (db) {
       try {
-        let query = client
-          .from("page_sections")
-          .select("*")
-          .eq("page_key", pageKey)
-          .order("display_order", { ascending: true });
+        const col = collection(db, "page_sections");
+        const q = publishedOnly
+          ? query(col, where("page_key", "==", pageKey), where("is_visible", "==", true), orderBy("display_order", "asc"))
+          : query(col, where("page_key", "==", pageKey), orderBy("display_order", "asc"));
 
-        if (publishedOnly) {
-          query = query.eq("is_visible", true).eq("status", "published");
-        }
-
-        const { data, error } = await query;
-        if (!error && data && data.length > 0) {
-          return data as PageSectionItem[];
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          return snap.docs.map((d) => d.data() as PageSectionItem);
         }
       } catch (err) {
-        logger.warn(`Supabase getPageSections for '${pageKey}' error:`, err);
+        logger.warn(`Firestore getPageSections for '${pageKey}' notice:`, err);
       }
     }
 
@@ -82,64 +78,51 @@ export const pagesService = {
   },
 
   async savePage(payload: Partial<PageRecord>): Promise<PageRecord> {
-    const client = getAdminSupabaseClient();
-    if (client && payload.page_key) {
+    const pageKey = payload.page_key;
+    if (!pageKey) {
+      throw new Error("Invalid page payload or missing page_key");
+    }
+
+    const existing = getRuntimePage(pageKey);
+    const updatedRecord: PageRecord = {
+      id: payload.id || existing?.id || `page-${Date.now()}`,
+      slug: payload.slug || existing?.slug || `/${pageKey}`,
+      page_key: pageKey,
+      title: payload.title || existing?.title || "New Page",
+      navigation_label: payload.navigation_label || existing?.navigation_label || "",
+      nav_location: payload.nav_location || existing?.nav_location || "header",
+      is_published: payload.is_published ?? existing?.is_published ?? true,
+      status: payload.status || existing?.status || "published",
+      seo_title: payload.seo_title || existing?.seo_title || "",
+      seo_description: payload.seo_description || existing?.seo_description || "",
+      seo_og_image: payload.seo_og_image || existing?.seo_og_image || "",
+      seo_keywords: payload.seo_keywords || existing?.seo_keywords || "",
+      is_template: payload.is_template ?? existing?.is_template ?? false,
+      layout_type: payload.layout_type || existing?.layout_type || "default",
+      display_order: payload.display_order ?? existing?.display_order ?? getRuntimePages().length + 1,
+      created_at: existing?.created_at || new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
+
+    const db = getBackendFirestore();
+    if (db) {
       try {
-        const { data, error } = await client
-          .from("pages")
-          .upsert(
-            {
-              ...payload,
-              updated_at: new Date().toISOString(),
-            },
-            { onConflict: "page_key" }
-          )
-          .select()
-          .single();
-        if (!error && data) {
-          updateRuntimePage(payload.page_key, data as PageRecord);
-          return data as PageRecord;
-        }
+        await setDoc(doc(db, "pages", pageKey), updatedRecord, { merge: true });
       } catch (err) {
-        logger.warn("Supabase page save error:", err);
+        logger.warn("Firestore page save notice:", err);
       }
     }
 
-    if (payload.page_key) {
-      const existing = getRuntimePage(payload.page_key);
-      if (existing) {
-        const updated = updateRuntimePage(payload.page_key, payload);
-        if (updated) return updated;
-      } else {
-        const newPage: PageRecord = {
-          id: payload.id || `page-${Date.now()}`,
-          slug: payload.slug || `/${payload.page_key}`,
-          page_key: payload.page_key,
-          title: payload.title || "New Page",
-          navigation_label: payload.navigation_label || "",
-          nav_location: payload.nav_location || "header",
-          is_published: payload.is_published ?? true,
-          status: payload.status || "published",
-          seo_title: payload.seo_title || "",
-          seo_description: payload.seo_description || "",
-          seo_og_image: payload.seo_og_image || "",
-          seo_keywords: payload.seo_keywords || "",
-          is_template: payload.is_template || false,
-          layout_type: payload.layout_type || "default",
-          display_order: payload.display_order ?? getRuntimePages().length + 1,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-        };
-        addRuntimePage(newPage);
-        return newPage;
-      }
+    if (existing) {
+      updateRuntimePage(pageKey, updatedRecord);
+    } else {
+      addRuntimePage(updatedRecord);
     }
 
-    throw new Error("Invalid page payload or missing page_key");
+    return updatedRecord;
   },
 
   async saveSection(payload: Partial<PageSectionItem>): Promise<PageSectionItem> {
-    const client = getAdminSupabaseClient();
     const sectionId = payload.id || `sec-${Date.now()}`;
     const sectionRecord: PageSectionItem = {
       id: sectionId,
@@ -169,19 +152,12 @@ export const pagesService = {
       updated_at: new Date().toISOString(),
     };
 
-    if (client) {
+    const db = getBackendFirestore();
+    if (db) {
       try {
-        const { data, error } = await client
-          .from("page_sections")
-          .upsert(sectionRecord, { onConflict: "id" })
-          .select()
-          .single();
-        if (!error && data) {
-          upsertRuntimeSection(data as PageSectionItem);
-          return data as PageSectionItem;
-        }
+        await setDoc(doc(db, "page_sections", sectionId), sectionRecord, { merge: true });
       } catch (err) {
-        logger.warn("Supabase section save error, syncing runtime store:", err);
+        logger.warn("Firestore section save notice:", err);
       }
     }
 
@@ -190,27 +166,27 @@ export const pagesService = {
   },
 
   async deleteSection(id: string): Promise<boolean> {
-    const client = getAdminSupabaseClient();
-    if (client) {
+    const db = getBackendFirestore();
+    if (db) {
       try {
-        await client.from("page_sections").delete().eq("id", id);
+        await deleteDoc(doc(db, "page_sections", id));
       } catch (err) {
-        logger.warn("Supabase section delete error:", err);
+        logger.warn("Firestore section delete notice:", err);
       }
     }
     return deleteRuntimeSection(id);
   },
 
   async reorderSections(pageKey: string, orderedIds: string[]): Promise<boolean> {
-    const client = getAdminSupabaseClient();
-    if (client) {
+    const db = getBackendFirestore();
+    if (db) {
       try {
         const updates = orderedIds.map((id, index) =>
-          client.from("page_sections").update({ display_order: index + 1 }).eq("id", id)
+          setDoc(doc(db, "page_sections", id), { display_order: index + 1 }, { merge: true })
         );
         await Promise.allSettled(updates);
       } catch (err) {
-        logger.warn("Supabase sections reorder error:", err);
+        logger.warn("Firestore sections reorder notice:", err);
       }
     }
     reorderRuntimeSections(pageKey, orderedIds);
@@ -218,18 +194,18 @@ export const pagesService = {
   },
 
   async duplicatePage(sourceKey: string, newTitle: string, newSlug: string, newKey: string): Promise<PageRecord | null> {
-    const client = getAdminSupabaseClient();
     const duplicated = duplicateRuntimePage(sourceKey, newTitle, newSlug, newKey);
+    const db = getBackendFirestore();
 
-    if (client && duplicated) {
+    if (db && duplicated) {
       try {
-        await client.from("pages").insert(duplicated);
+        await setDoc(doc(db, "pages", newKey), duplicated);
         const sections = getRuntimeSections(newKey);
-        if (sections.length > 0) {
-          await client.from("page_sections").insert(sections);
+        for (const sec of sections) {
+          await setDoc(doc(db, "page_sections", sec.id), sec);
         }
       } catch (err) {
-        logger.warn("Supabase page duplicate sync error:", err);
+        logger.warn("Firestore page duplicate sync notice:", err);
       }
     }
 
@@ -237,16 +213,15 @@ export const pagesService = {
   },
 
   async publishPage(pageKey: string, unpublish = false): Promise<{ page: PageRecord | null; count: number }> {
-    const client = getAdminSupabaseClient();
     const newStatus = unpublish ? "draft" : "published";
     const isPub = !unpublish;
 
-    if (client) {
+    const db = getBackendFirestore();
+    if (db) {
       try {
-        await client.from("pages").update({ status: newStatus, is_published: isPub }).eq("page_key", pageKey);
-        await client.from("page_sections").update({ status: newStatus }).eq("page_key", pageKey);
+        await setDoc(doc(db, "pages", pageKey), { status: newStatus, is_published: isPub }, { merge: true });
       } catch (err) {
-        logger.warn("Supabase publish error:", err);
+        logger.warn("Firestore publish notice:", err);
       }
     }
 

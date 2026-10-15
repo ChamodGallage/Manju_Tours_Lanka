@@ -112,7 +112,7 @@
         "transform": "lodash/{{member}}"
       }
     },
-    "outputFileTracingRoot": "D:\\Manju Tours",
+    "outputFileTracingRoot": "D:\\Github project\\Manju_Tours_Lanka",
     "enablePrerenderSourceMaps": true,
     "cacheComponents": false,
     "cacheLife": {
@@ -350,9 +350,9 @@
           "as": "*.css"
         }
       },
-      "root": "D:\\Manju Tours"
+      "root": "D:\\Github project\\Manju_Tours_Lanka"
     },
-    "repoRoot": "D:\\Manju Tours",
+    "repoRoot": "D:\\Github project\\Manju_Tours_Lanka",
     "distDirRoot": ".next",
     "_originalRewrites": {
       "beforeFiles": [],
@@ -365,7 +365,7 @@
       "fallback": []
     }
   },
-  "appDir": "D:\\Manju Tours\\frontend",
+  "appDir": "D:\\Github project\\Manju_Tours_Lanka\\frontend",
   "relativeAppDir": "frontend",
   "files": [
     ".next\\package.json",

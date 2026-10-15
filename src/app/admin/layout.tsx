@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
@@ -23,7 +23,8 @@ import {
   Shield,
   CalendarCheck,
 } from "lucide-react";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getFirebaseAuth, isFirebaseConfigured } from "@/lib/firebase/client";
+import { signOut, onAuthStateChanged } from "firebase/auth";
 
 interface NavGroup {
   group: string;
@@ -84,14 +85,35 @@ export default function AdminLayout({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   // If on login page, render without admin navigation frame
-  if (["/admin/login", "/admin/forgot-password", "/admin/reset-password"].includes(pathname)) {
+  const isAuthPage = ["/admin/login", "/admin/forgot-password", "/admin/reset-password"].includes(pathname);
+  const [checkingAuth, setCheckingAuth] = useState(() => !isAuthPage && isFirebaseConfigured());
+
+  useEffect(() => {
+    if (isAuthPage) return;
+
+    const auth = getFirebaseAuth();
+    if (!auth) return;
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        router.push("/admin/login");
+      }
+      setCheckingAuth(false);
+    });
+
+    return () => unsubscribe();
+  }, [isAuthPage, router]);
+
+  if (isAuthPage) {
     return <>{children}</>;
   }
 
   const handleSignOut = async () => {
     try {
-      const supabase = getSupabaseBrowserClient();
-      await supabase.auth.signOut();
+      const auth = getFirebaseAuth();
+      if (auth) {
+        await signOut(auth);
+      }
       router.push("/admin/login");
       router.refresh();
     } catch (err) {
@@ -99,6 +121,17 @@ export default function AdminLayout({
       router.push("/admin/login");
     }
   };
+
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen bg-[#F4EFE6] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-3 border-[#0C5A70] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+          <p className="text-xs text-[#5B6770] font-semibold">Verifying Administrator Session...</p>
+        </div>
+      </div>
+    );
+  }
 
   const renderNavLinks = () => (
     <div className="space-y-6">

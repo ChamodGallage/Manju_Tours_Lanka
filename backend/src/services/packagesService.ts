@@ -1,4 +1,5 @@
-import { getAdminSupabaseClient, getPublicSupabaseClient } from "../config/supabase.js";
+import { getBackendFirestore } from "../config/firebase.js";
+import { collection, doc, getDoc, getDocs, setDoc, deleteDoc, query, where, orderBy } from "firebase/firestore";
 import { toursSeed } from "../data/seed-dataset.js";
 import type { TourPackage } from "../types/database.types.js";
 import { logger } from "../utils/logger.js";
@@ -67,19 +68,19 @@ let runtimePackages: TourPackage[] = toursSeed.map((t, index) => {
 
 export const packagesService = {
   async getAll(includeUnpublished = false): Promise<TourPackage[]> {
-    const client = getPublicSupabaseClient() || getAdminSupabaseClient();
-    if (client) {
+    const db = getBackendFirestore();
+    if (db) {
       try {
-        let query = client.from("tour_packages").select("*").order("display_order", { ascending: true });
-        if (!includeUnpublished) {
-          query = query.eq("is_published", true);
-        }
-        const { data, error } = await query;
-        if (!error && data && data.length > 0) {
-          return data as TourPackage[];
+        const col = collection(db, "tours");
+        const q = includeUnpublished
+          ? query(col, orderBy("display_order", "asc"))
+          : query(col, where("is_published", "==", true), orderBy("display_order", "asc"));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          return snap.docs.map((d) => d.data() as TourPackage);
         }
       } catch (err) {
-        logger.warn("Supabase packages fetch failed, using runtime fallback:", err);
+        logger.warn("Firestore packages fetch notice, using runtime fallback:", err);
       }
     }
 
@@ -89,19 +90,21 @@ export const packagesService = {
   },
 
   async getBySlug(slug: string): Promise<TourPackage | null> {
-    const client = getPublicSupabaseClient() || getAdminSupabaseClient();
-    if (client) {
+    const db = getBackendFirestore();
+    if (db) {
       try {
-        const { data, error } = await client
-          .from("tour_packages")
-          .select("*")
-          .eq("slug", slug)
-          .maybeSingle();
-        if (!error && data) {
-          return data as TourPackage;
+        const docRef = doc(db, "tours", slug);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          return docSnap.data() as TourPackage;
+        }
+        const q = query(collection(db, "tours"), where("slug", "==", slug));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          return snap.docs[0].data() as TourPackage;
         }
       } catch (err) {
-        logger.warn(`Supabase tour package fetch for '${slug}' failed:`, err);
+        logger.warn(`Firestore tour package fetch for '${slug}' notice:`, err);
       }
     }
 
@@ -109,10 +112,11 @@ export const packagesService = {
   },
 
   async create(payload: Partial<TourPackage>): Promise<TourPackage> {
+    const slug = payload.slug || `tour-${Date.now()}`;
     const newPkg: TourPackage = {
       id: payload.id || `tour-${Date.now()}`,
       title: payload.title || "New Tour Package",
-      slug: payload.slug || `tour-${Date.now()}`,
+      slug,
       tagline: payload.tagline || "",
       overview: payload.overview || "",
       hero_image: payload.hero_image || "",
@@ -149,16 +153,12 @@ export const packagesService = {
       updated_at: new Date().toISOString(),
     };
 
-    const client = getAdminSupabaseClient();
-    if (client) {
+    const db = getBackendFirestore();
+    if (db) {
       try {
-        const { data, error } = await client.from("tour_packages").insert(newPkg).select().single();
-        if (!error && data) {
-          runtimePackages.push(data as TourPackage);
-          return data as TourPackage;
-        }
+        await setDoc(doc(db, "tours", slug), newPkg);
       } catch (err) {
-        logger.warn("Supabase package insert failed, saved to runtime store:", err);
+        logger.warn("Firestore tour package insert notice:", err);
       }
     }
 
@@ -166,49 +166,50 @@ export const packagesService = {
     return newPkg;
   },
 
-  async update(id: string, updates: Partial<TourPackage>): Promise<TourPackage | null> {
-    const client = getAdminSupabaseClient();
-    if (client) {
-      try {
-        const { data, error } = await client
-          .from("tour_packages")
-          .update({ ...updates, updated_at: new Date().toISOString() })
-          .eq("id", id)
-          .select()
-          .single();
-        if (!error && data) {
-          const index = runtimePackages.findIndex((p) => p.id === id);
-          if (index !== -1) runtimePackages[index] = data as TourPackage;
-          return data as TourPackage;
-        }
-      } catch (err) {
-        logger.warn("Supabase package update failed, updating runtime store:", err);
-      }
+  async update(idOrSlug: string, updates: Partial<TourPackage>): Promise<TourPackage | null> {
+    const db = getBackendFirestore();
+    let current = await this.getBySlug(idOrSlug);
+    if (!current) {
+      current = runtimePackages.find((p) => p.id === idOrSlug || p.slug === idOrSlug) || null;
     }
+    if (!current) return null;
 
-    const index = runtimePackages.findIndex((p) => p.id === id || p.slug === id);
-    if (index === -1) return null;
-
-    runtimePackages[index] = {
-      ...runtimePackages[index],
+    const updatedRecord: TourPackage = {
+      ...current,
       ...updates,
       updated_at: new Date().toISOString(),
     };
-    return runtimePackages[index];
+
+    if (db) {
+      try {
+        await setDoc(doc(db, "tours", current.slug), updatedRecord, { merge: true });
+      } catch (err) {
+        logger.warn(`Firestore tour package update for '${idOrSlug}' notice:`, err);
+      }
+    }
+
+    const index = runtimePackages.findIndex((p) => p.id === current?.id || p.slug === current?.slug);
+    if (index !== -1) {
+      runtimePackages[index] = updatedRecord;
+    }
+    return updatedRecord;
   },
 
-  async delete(id: string): Promise<boolean> {
-    const client = getAdminSupabaseClient();
-    if (client) {
+  async delete(idOrSlug: string): Promise<boolean> {
+    const db = getBackendFirestore();
+    const current = await this.getBySlug(idOrSlug);
+    const targetSlug = current ? current.slug : idOrSlug;
+
+    if (db) {
       try {
-        await client.from("tour_packages").delete().eq("id", id);
+        await deleteDoc(doc(db, "tours", targetSlug));
       } catch (err) {
-        logger.warn("Supabase package delete error:", err);
+        logger.warn(`Firestore package delete for '${idOrSlug}' notice:`, err);
       }
     }
 
     const beforeLength = runtimePackages.length;
-    runtimePackages = runtimePackages.filter((p) => p.id !== id && p.slug !== id);
+    runtimePackages = runtimePackages.filter((p) => p.id !== idOrSlug && p.slug !== idOrSlug);
     return runtimePackages.length < beforeLength;
   },
 };

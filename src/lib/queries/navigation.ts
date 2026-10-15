@@ -1,6 +1,6 @@
-import { createClient } from "@supabase/supabase-js";
-import type { Database, NavigationItem } from "@/types/database.types";
-import { supabaseContentFetch } from "@/lib/supabase/fetch";
+import type { NavigationItem } from "@/types/database.types";
+import { getFirebaseFirestore } from "@/lib/firebase/client";
+import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 
 export const DEFAULT_NAVIGATION_ITEMS: NavigationItem[] = [
   // Header Navigation
@@ -26,21 +26,18 @@ export const DEFAULT_NAVIGATION_ITEMS: NavigationItem[] = [
 export async function getNavigationItems(
   location: "header" | "footer_quick_links" | "footer_legal" | "all" = "header"
 ): Promise<NavigationItem[]> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const db = getFirebaseFirestore();
 
-  if (url && publishableKey) {
+  if (db) {
     try {
-      const client = createClient<Database>(url, publishableKey, {
-        global: { fetch: supabaseContentFetch },
-      });
-      let query = client.from("navigation_items").select("*").eq("is_active", true);
-      if (location !== "all") {
-        query = query.eq("menu_location", location);
-      }
-      const { data, error } = await query.order("display_order", { ascending: true }).retry(false);
-      if (!error && data && data.length > 0) {
-        return data as NavigationItem[];
+      const col = collection(db, "navigation");
+      const q = location === "all"
+        ? query(col, where("is_active", "==", true), orderBy("display_order", "asc"))
+        : query(col, where("is_active", "==", true), where("menu_location", "==", location), orderBy("display_order", "asc"));
+
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        return snap.docs.map((d) => d.data() as NavigationItem);
       }
     } catch {
       // Fallback below

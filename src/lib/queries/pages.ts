@@ -1,24 +1,21 @@
-import { createClient } from "@supabase/supabase-js";
-import type { Database, PageRecord } from "@/types/database.types";
-import { supabaseContentFetch } from "@/lib/supabase/fetch";
+import type { PageRecord } from "@/types/database.types";
 import { getRuntimePages, getRuntimePage } from "@/lib/data/pages-cms-dataset";
+import { getFirebaseFirestore } from "@/lib/firebase/client";
+import { collection, doc, getDoc, getDocs, query, where, orderBy } from "firebase/firestore";
 
 export async function getAllPages(statusFilter: "published" | "all" = "published"): Promise<PageRecord[]> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const db = getFirebaseFirestore();
 
-  if (url && publishableKey) {
+  if (db) {
     try {
-      const client = createClient<Database>(url, publishableKey, {
-        global: { fetch: supabaseContentFetch },
-      });
-      let query = client.from("pages").select("*");
-      if (statusFilter === "published") {
-        query = query.eq("is_published", true).eq("status", "published");
-      }
-      const { data, error } = await query.order("display_order", { ascending: true }).retry(false);
-      if (!error && data && data.length > 0) {
-        return data as PageRecord[];
+      const col = collection(db, "pages");
+      const q = statusFilter === "published"
+        ? query(col, where("is_published", "==", true), orderBy("display_order", "asc"))
+        : query(col, orderBy("display_order", "asc"));
+
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        return snap.docs.map((d) => d.data() as PageRecord);
       }
     } catch {
       // Fallback to runtime dataset
@@ -33,22 +30,19 @@ export async function getAllPages(statusFilter: "published" | "all" = "published
 }
 
 export async function getPageBySlug(slug: string): Promise<PageRecord | null> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const db = getFirebaseFirestore();
 
-  if (url && publishableKey) {
+  if (db) {
     try {
-      const client = createClient<Database>(url, publishableKey, {
-        global: { fetch: supabaseContentFetch },
-      });
-      const { data, error } = await client
-        .from("pages")
-        .select("*")
-        .eq("slug", slug)
-        .maybeSingle()
-        .retry(false);
-      if (!error && data) {
-        return data as PageRecord;
+      const docRef = doc(db, "pages", slug);
+      const snap = await getDoc(docRef);
+      if (snap.exists()) {
+        return snap.data() as PageRecord;
+      }
+      const q = query(collection(db, "pages"), where("slug", "==", slug));
+      const qSnap = await getDocs(q);
+      if (!qSnap.empty) {
+        return qSnap.docs[0].data() as PageRecord;
       }
     } catch {
       // Fallback
@@ -59,22 +53,19 @@ export async function getPageBySlug(slug: string): Promise<PageRecord | null> {
 }
 
 export async function getPageByKey(pageKey: string): Promise<PageRecord | null> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const db = getFirebaseFirestore();
 
-  if (url && publishableKey) {
+  if (db) {
     try {
-      const client = createClient<Database>(url, publishableKey, {
-        global: { fetch: supabaseContentFetch },
-      });
-      const { data, error } = await client
-        .from("pages")
-        .select("*")
-        .eq("page_key", pageKey)
-        .maybeSingle()
-        .retry(false);
-      if (!error && data) {
-        return data as PageRecord;
+      const docRef = doc(db, "pages", pageKey);
+      const snap = await getDoc(docRef);
+      if (snap.exists()) {
+        return snap.data() as PageRecord;
+      }
+      const q = query(collection(db, "pages"), where("page_key", "==", pageKey));
+      const qSnap = await getDocs(q);
+      if (!qSnap.empty) {
+        return qSnap.docs[0].data() as PageRecord;
       }
     } catch {
       // Fallback

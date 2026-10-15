@@ -1,4 +1,5 @@
-import { getAdminSupabaseClient, getPublicSupabaseClient } from "../config/supabase.js";
+import { getBackendFirestore } from "../config/firebase.js";
+import { collection, getDocs, doc, getDoc, setDoc, deleteDoc, query, where, orderBy } from "firebase/firestore";
 import { destinationsSeed } from "../data/seed-dataset.js";
 import type { DestinationItem } from "../types/database.types.js";
 import { logger } from "../utils/logger.js";
@@ -48,41 +49,45 @@ let runtimeDestinations: DestinationItem[] = destinationsSeed.map((d, index) => 
 
 export const destinationsService = {
   async getAll(includeUnpublished = false): Promise<DestinationItem[]> {
-    const client = getPublicSupabaseClient() || getAdminSupabaseClient();
-    if (client) {
+    const db = getBackendFirestore();
+    if (db) {
       try {
-        let query = client.from("destinations").select("*").order("display_order", { ascending: true });
-        if (!includeUnpublished) {
-          query = query.eq("is_published", true);
-        }
-        const { data, error } = await query;
-        if (!error && data && data.length > 0) {
-          return data as DestinationItem[];
+        const col = collection(db, "destinations");
+        const q = includeUnpublished
+          ? query(col, orderBy("display_order", "asc"))
+          : query(col, where("is_published", "==", true), orderBy("display_order", "asc"));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          return snap.docs.map((d) => d.data() as DestinationItem);
         }
       } catch (err) {
-        logger.warn("Supabase destinations fetch failed, using runtime fallback:", err);
+        logger.warn("Firestore destinations query notice, using runtime dataset:", err);
       }
     }
 
-    return runtimeDestinations
-      .filter((d) => includeUnpublished || d.is_published)
-      .sort((a, b) => a.display_order - b.display_order);
+    let items = [...runtimeDestinations];
+    if (!includeUnpublished) {
+      items = items.filter((d) => d.is_published);
+    }
+    return items.sort((a, b) => a.display_order - b.display_order);
   },
 
   async getBySlug(slug: string): Promise<DestinationItem | null> {
-    const client = getPublicSupabaseClient() || getAdminSupabaseClient();
-    if (client) {
+    const db = getBackendFirestore();
+    if (db) {
       try {
-        const { data, error } = await client
-          .from("destinations")
-          .select("*")
-          .eq("slug", slug)
-          .maybeSingle();
-        if (!error && data) {
-          return data as DestinationItem;
+        const docRef = doc(db, "destinations", slug);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          return docSnap.data() as DestinationItem;
+        }
+        const q = query(collection(db, "destinations"), where("slug", "==", slug));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          return snap.docs[0].data() as DestinationItem;
         }
       } catch (err) {
-        logger.warn(`Supabase destination fetch for '${slug}' failed:`, err);
+        logger.warn(`Firestore destination lookup for ${slug} notice:`, err);
       }
     }
 
@@ -90,19 +95,20 @@ export const destinationsService = {
   },
 
   async create(payload: Partial<DestinationItem>): Promise<DestinationItem> {
-    const newItem: DestinationItem = {
-      id: payload.id || `dest-${Date.now()}`,
-      name: payload.name || "New Destination",
-      slug: payload.slug || `destination-${Date.now()}`,
+    const slug = payload.slug || (payload.name ? payload.name.toLowerCase().replace(/[^a-z0-9]+/g, "-") : `dest-${Date.now()}`);
+    const newRecord: DestinationItem = {
+      id: `dest-${Date.now()}`,
+      slug,
+      name: payload.name || "Untitled Destination",
       tagline: payload.tagline || "",
       region: payload.region || "Cultural Triangle",
       summary: payload.summary || "",
       content: payload.content || "",
-      hero_image: payload.hero_image || "",
+      hero_image: payload.hero_image || `/images/destinations/${slug}/hero.webp`,
       hero_image_metadata: payload.hero_image_metadata || null,
       gallery_images: payload.gallery_images || [],
       highlights: payload.highlights || [],
-      best_time_to_visit: payload.best_time_to_visit || "",
+      best_time_to_visit: payload.best_time_to_visit || "Year-round",
       ideal_duration: payload.ideal_duration || "2 - 3 Days",
       travel_tips: payload.travel_tips || "",
       latitude: payload.latitude || 0,
@@ -110,72 +116,69 @@ export const destinationsService = {
       display_order: payload.display_order ?? runtimeDestinations.length,
       is_featured: payload.is_featured ?? false,
       is_published: payload.is_published ?? true,
-      seo_title: payload.seo_title || "",
-      seo_description: payload.seo_description || "",
+      seo_title: payload.seo_title || `${payload.name} Travel Guide | Manju Tours Lanka`,
+      seo_description: payload.seo_description || payload.summary || "",
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     };
 
-    const client = getAdminSupabaseClient();
-    if (client) {
+    const db = getBackendFirestore();
+    if (db) {
       try {
-        const { data, error } = await client.from("destinations").insert(newItem).select().single();
-        if (!error && data) {
-          runtimeDestinations.push(data as DestinationItem);
-          return data as DestinationItem;
-        }
+        await setDoc(doc(db, "destinations", slug), newRecord);
       } catch (err) {
-        logger.warn("Supabase destination insert failed, saved to runtime store:", err);
+        logger.warn("Failed saving new destination to Firestore:", err);
       }
     }
 
-    runtimeDestinations.push(newItem);
-    return newItem;
+    runtimeDestinations.push(newRecord);
+    return newRecord;
   },
 
-  async update(id: string, updates: Partial<DestinationItem>): Promise<DestinationItem | null> {
-    const client = getAdminSupabaseClient();
-    if (client) {
-      try {
-        const { data, error } = await client
-          .from("destinations")
-          .update({ ...updates, updated_at: new Date().toISOString() })
-          .eq("id", id)
-          .select()
-          .single();
-        if (!error && data) {
-          const index = runtimeDestinations.findIndex((d) => d.id === id);
-          if (index !== -1) runtimeDestinations[index] = data as DestinationItem;
-          return data as DestinationItem;
-        }
-      } catch (err) {
-        logger.warn("Supabase destination update failed, applying to runtime store:", err);
-      }
+  async update(idOrSlug: string, updates: Partial<DestinationItem>): Promise<DestinationItem | null> {
+    const db = getBackendFirestore();
+    let current = await this.getBySlug(idOrSlug);
+    if (!current) {
+      current = runtimeDestinations.find((d) => d.id === idOrSlug) || null;
     }
+    if (!current) return null;
 
-    const index = runtimeDestinations.findIndex((d) => d.id === id || d.slug === id);
-    if (index === -1) return null;
-
-    runtimeDestinations[index] = {
-      ...runtimeDestinations[index],
+    const updatedRecord: DestinationItem = {
+      ...current,
       ...updates,
       updated_at: new Date().toISOString(),
     };
-    return runtimeDestinations[index];
-  },
 
-  async delete(id: string): Promise<boolean> {
-    const client = getAdminSupabaseClient();
-    if (client) {
+    if (db) {
       try {
-        await client.from("destinations").delete().eq("id", id);
+        await setDoc(doc(db, "destinations", current.slug), updatedRecord, { merge: true });
       } catch (err) {
-        logger.warn("Supabase destination delete error:", err);
+        logger.warn(`Failed updating destination ${idOrSlug} in Firestore:`, err);
       }
     }
 
-    const beforeLength = runtimeDestinations.length;
-    runtimeDestinations = runtimeDestinations.filter((d) => d.id !== id && d.slug !== id);
-    return runtimeDestinations.length < beforeLength;
+    const idx = runtimeDestinations.findIndex((d) => d.id === current?.id || d.slug === current?.slug);
+    if (idx !== -1) {
+      runtimeDestinations[idx] = updatedRecord;
+    }
+
+    return updatedRecord;
+  },
+
+  async delete(idOrSlug: string): Promise<boolean> {
+    const db = getBackendFirestore();
+    const current = await this.getBySlug(idOrSlug);
+    const targetSlug = current ? current.slug : idOrSlug;
+
+    if (db) {
+      try {
+        await deleteDoc(doc(db, "destinations", targetSlug));
+      } catch (err) {
+        logger.warn(`Failed deleting destination ${idOrSlug} from Firestore:`, err);
+      }
+    }
+
+    runtimeDestinations = runtimeDestinations.filter((d) => d.id !== idOrSlug && d.slug !== idOrSlug);
+    return true;
   },
 };

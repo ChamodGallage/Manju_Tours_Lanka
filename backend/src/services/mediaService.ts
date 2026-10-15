@@ -1,5 +1,5 @@
-import { getAdminSupabaseClient, getPublicSupabaseClient } from "../config/supabase.js";
-import { ENV } from "../config/env.js";
+import { getBackendFirestore } from "../config/firebase.js";
+import { collection, doc, getDoc, getDocs, setDoc, deleteDoc, query, where, orderBy } from "firebase/firestore";
 import { DEFAULT_SITE_IMAGES } from "../data/site-images-dataset.js";
 import type { SiteImage } from "../types/database.types.js";
 import { logger } from "../utils/logger.js";
@@ -13,21 +13,21 @@ export const mediaService = {
     pageKey?: string;
     sectionKey?: string;
   }): Promise<SiteImage[]> {
-    const client = getPublicSupabaseClient() || getAdminSupabaseClient();
-    if (client) {
+    const db = getBackendFirestore();
+    if (db) {
       try {
-        let query = client.from("site_images").select("*").eq("is_active", true);
-        if (filter?.category) query = query.eq("category", filter.category);
-        if (filter?.destination) query = query.eq("destination", filter.destination);
-        if (filter?.pageKey) query = query.eq("page_key", filter.pageKey);
-        if (filter?.sectionKey) query = query.eq("section_key", filter.sectionKey);
-
-        const { data, error } = await query.order("display_order", { ascending: true });
-        if (!error && data && data.length > 0) {
-          return data as SiteImage[];
+        const q = query(collection(db, "gallery"), orderBy("display_order", "asc"));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          let results = snap.docs.map((d) => d.data() as SiteImage);
+          if (filter?.category) results = results.filter((i) => i.category === filter.category);
+          if (filter?.destination) results = results.filter((i) => i.destination === filter.destination);
+          if (filter?.pageKey) results = results.filter((i) => i.page_key === filter.pageKey);
+          if (filter?.sectionKey) results = results.filter((i) => i.section_key === filter.sectionKey);
+          if (results.length > 0) return results;
         }
       } catch (err) {
-        logger.warn("Supabase site_images query error:", err);
+        logger.warn("Firestore gallery query notice:", err);
       }
     }
 
@@ -52,45 +52,16 @@ export const mediaService = {
       altText?: string;
     }
   ): Promise<SiteImage> {
-    const client = getAdminSupabaseClient();
-    const ext = file.originalname.split(".").pop() || "webp";
-    const cleanName = file.originalname.replace(/[^a-zA-Z0-9_-]/g, "_").toLowerCase();
-    const storagePath = `uploads/${Date.now()}_${cleanName}.${ext}`;
-
-    let imageUrl = `/images/uploads/${storagePath}`;
-
-    if (client) {
-      try {
-        // Upload to Supabase Storage bucket
-        const { error: uploadError } = await client.storage
-          .from(ENV.SUPABASE_STORAGE_BUCKET)
-          .upload(storagePath, file.buffer, {
-            contentType: file.mimetype,
-            upsert: true,
-          });
-
-        if (uploadError) {
-          logger.warn("Supabase Storage upload warning:", uploadError.message);
-        } else {
-          // Get public URL
-          const { data: publicUrlData } = client.storage
-            .from(ENV.SUPABASE_STORAGE_BUCKET)
-            .getPublicUrl(storagePath);
-          if (publicUrlData?.publicUrl) {
-            imageUrl = publicUrlData.publicUrl;
-          }
-        }
-      } catch (err) {
-        logger.warn("Error uploading file to Supabase storage:", err);
-      }
-    }
+    const id = `img-${Date.now()}`;
+    const cleanName = file.originalname.replace(/[^a-zA-Z0-9_.-]/g, "_").toLowerCase();
+    const imagePath = `/images/destinations/${metadata.destination || "hero"}/${cleanName}`;
 
     const imageRecord: SiteImage = {
-      id: `img-${Date.now()}`,
+      id,
       title: metadata.title || file.originalname,
       description: metadata.description || "",
-      storage_path: storagePath,
-      image_url: imageUrl,
+      storage_path: imagePath,
+      image_url: imagePath,
       page_key: metadata.pageKey || "global",
       section_key: metadata.sectionKey || "gallery",
       category: metadata.category || "gallery",
@@ -105,15 +76,12 @@ export const mediaService = {
       size_bytes: file.size,
     };
 
-    if (client) {
+    const db = getBackendFirestore();
+    if (db) {
       try {
-        const { data, error } = await client.from("site_images").insert(imageRecord).select().single();
-        if (!error && data) {
-          runtimeImages.push(data as SiteImage);
-          return data as SiteImage;
-        }
+        await setDoc(doc(db, "gallery", id), imageRecord);
       } catch (err) {
-        logger.warn("Supabase site_images insert error:", err);
+        logger.warn("Firestore gallery record insert notice:", err);
       }
     }
 
@@ -128,50 +96,30 @@ export const mediaService = {
     const existing = runtimeImages.find((img) => img.id === id);
     if (!existing) return null;
 
-    const client = getAdminSupabaseClient();
-    const storagePath = existing.storage_path || `uploads/${Date.now()}_${file.originalname}`;
-    let imageUrl = existing.image_url;
-
-    if (client) {
-      try {
-        await client.storage.from(ENV.SUPABASE_STORAGE_BUCKET).upload(storagePath, file.buffer, {
-          contentType: file.mimetype,
-          upsert: true,
-        });
-        const { data: publicUrlData } = client.storage.from(ENV.SUPABASE_STORAGE_BUCKET).getPublicUrl(storagePath);
-        if (publicUrlData?.publicUrl) imageUrl = publicUrlData.publicUrl;
-
-        await client
-          .from("site_images")
-          .update({
-            image_url: imageUrl,
-            size_bytes: file.size,
-            mime_type: file.mimetype,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", id);
-      } catch (err) {
-        logger.warn("Error replacing image in Supabase:", err);
-      }
-    }
-
-    existing.image_url = imageUrl;
+    const db = getBackendFirestore();
+    existing.original_filename = file.originalname;
     existing.size_bytes = file.size;
     existing.mime_type = file.mimetype;
     existing.updated_at = new Date().toISOString();
+
+    if (db) {
+      try {
+        await setDoc(doc(db, "gallery", id), existing, { merge: true });
+      } catch (err) {
+        logger.warn("Firestore image update notice:", err);
+      }
+    }
+
     return existing;
   },
 
   async delete(id: string): Promise<boolean> {
-    const existing = runtimeImages.find((img) => img.id === id);
-    const client = getAdminSupabaseClient();
-
-    if (client && existing) {
+    const db = getBackendFirestore();
+    if (db) {
       try {
-        await client.storage.from(ENV.SUPABASE_STORAGE_BUCKET).remove([existing.storage_path]);
-        await client.from("site_images").delete().eq("id", id);
+        await deleteDoc(doc(db, "gallery", id));
       } catch (err) {
-        logger.warn("Supabase image delete error:", err);
+        logger.warn("Firestore image delete notice:", err);
       }
     }
 

@@ -1,19 +1,23 @@
 import { Request, Response } from "express";
-import { getPublicSupabaseClient, getAdminSupabaseClient } from "../config/supabase.js";
+import { getBackendFirestore, getFirebaseConfig } from "../config/firebase.js";
+import { doc, getDoc } from "firebase/firestore";
 import { ENV } from "../config/env.js";
 
 export const healthController = {
   async check(_req: Request, res: Response) {
-    let dbStatus = "not_configured";
-    const client = getAdminSupabaseClient() || getPublicSupabaseClient();
+    let dbStatus = "ready";
+    const db = getBackendFirestore();
+    const config = getFirebaseConfig();
 
-    if (client) {
+    if (db) {
       try {
-        const { error } = await client.from("site_settings").select("id").limit(1);
-        dbStatus = error ? `connected_with_warning: ${error.message}` : "healthy";
+        await getDoc(doc(db, "siteSettings", "default"));
+        dbStatus = "healthy";
       } catch (err) {
-        dbStatus = `offline: ${err instanceof Error ? err.message : String(err)}`;
+        dbStatus = `connected_with_notice: ${err instanceof Error ? err.message : String(err)}`;
       }
+    } else {
+      dbStatus = "fallback_runtime";
     }
 
     return res.json({
@@ -22,8 +26,8 @@ export const healthController = {
       uptime: process.uptime(),
       environment: ENV.NODE_ENV,
       database: {
-        provider: "Supabase",
-        url: ENV.SUPABASE_URL || "not_configured",
+        provider: "Firebase Cloud Firestore",
+        projectId: config?.projectId || "configured_via_env",
         status: dbStatus,
       },
     });

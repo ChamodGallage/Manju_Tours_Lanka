@@ -6,7 +6,7 @@ const server = app.listen(ENV.PORT, () => {
   logger.info(`🌴 Manju Tours Lanka Backend API running on port ${ENV.PORT}`);
   logger.info(`📡 Health Check: http://localhost:${ENV.PORT}/api/health`);
   logger.info(`🌐 Allowed Frontend: ${ENV.FRONTEND_URL}`);
-  logger.info(`🗄️  Supabase URL: ${ENV.SUPABASE_URL || "Pending configuration"}`);
+  logger.info(`🗄️  Firebase Project: ${ENV.FIREBASE_PROJECT_ID || "Configured via local environment"}`);
 });
 
 process.on("SIGTERM", () => {

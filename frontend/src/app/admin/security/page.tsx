@@ -3,34 +3,36 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { KeyRound, Loader2, ShieldCheck } from "lucide-react";
-import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getFirebaseAuth } from "@/lib/firebase/client";
+import { onAuthStateChanged } from "firebase/auth";
 
 export default function AdminSecurityPage() {
   const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(() => Boolean(getFirebaseAuth()));
+  const [error, setError] = useState(() => (getFirebaseAuth() ? "" : "Firebase Authentication is not configured."));
 
   useEffect(() => {
-    let mounted = true;
-    getSupabaseBrowserClient().auth.getUser().then(({ data, error: authError }) => {
-      if (!mounted) return;
-      if (authError || !data.user) setError("Could not verify the current administrator session.");
-      else setEmail(data.user.email || "Email not available");
-      setLoading(false);
-    }).catch(() => {
-      if (mounted) {
-        setError("Could not verify the current administrator session.");
-        setLoading(false);
+    const auth = getFirebaseAuth();
+    if (!auth) return;
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setEmail(user.email || "Email not available");
+        setError("");
+      } else {
+        setError("No active administrator session detected.");
       }
+      setLoading(false);
     });
-    return () => { mounted = false; };
+
+    return () => unsubscribe();
   }, []);
 
   return (
     <div className="mx-auto max-w-3xl space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight text-[#17202A]">Admin Account & Security</h1>
-        <p className="mt-1 text-sm text-[#5B6770]">Review your signed-in account and manage its password securely through Supabase Authentication.</p>
+        <p className="mt-1 text-sm text-[#5B6770]">Review your signed-in account and manage its password securely through Firebase Authentication.</p>
       </div>
       <section className="rounded-2xl border border-[#E8E2D2] bg-white p-6 shadow-xs">
         <div className="flex items-center gap-3">
@@ -44,7 +46,7 @@ export default function AdminSecurityPage() {
       </section>
       <section className="rounded-2xl border border-[#E8E2D2] bg-white p-6 text-sm text-[#5B6770]">
         <h2 className="font-bold text-[#17202A]">Where to find your admin email</h2>
-        <p className="mt-2">The email shown above is the account currently signed in. The authorized account list is in your Supabase project under Authentication → Users. Admin access is granted separately to explicitly provisioned users.</p>
+        <p className="mt-2">The email shown above is the account currently signed in. The authorized account list is in your Firebase project under Firebase Console → Build → Authentication → Users. Admin access is granted separately to explicitly provisioned users.</p>
       </section>
     </div>
   );

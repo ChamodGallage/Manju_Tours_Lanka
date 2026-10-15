@@ -1,6 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
-import { supabaseContentFetch } from "@/lib/supabase/fetch";
-import prisma from "../db";
+import { getFirebaseFirestore } from "@/lib/firebase/client";
+import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import { mockReviews } from "../data/mock-data";
 import type { ReviewItem as DbReviewItem } from "@/types/database.types";
 
@@ -41,133 +40,49 @@ function formatDbReview(r: Partial<DbReviewItem> & { author_name?: string; comme
 }
 
 export async function getFeaturedReviews(): Promise<FormattedReview[]> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const db = getFirebaseFirestore();
 
-  if (url && publishableKey) {
+  if (db) {
     try {
-      const client = createClient(url, publishableKey, {
-        global: { fetch: supabaseContentFetch },
-      });
-      const { data, error } = await client
-        .from("reviews")
-        .select("*")
-        .eq("is_featured", true)
-        .eq("is_published", true)
-        .order("display_order", { ascending: true })
-        .retry(false);
-
-      if (!error && data && data.length > 0) {
-        return (data as unknown as DbReviewItem[]).map(formatDbReview);
+      const q = query(
+        collection(db, "reviews"),
+        where("is_featured", "==", true),
+        where("is_published", "==", true)
+      );
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        return snap.docs.map((d) => formatDbReview({ id: d.id, ...d.data() } as DbReviewItem));
       }
     } catch (err) {
-      console.warn("Supabase getFeaturedReviews error, falling back:", err);
+      console.warn("Firestore getFeaturedReviews error, falling back:", err);
     }
   }
 
-  try {
-    const reviews = await prisma.review.findMany({
-      where: { isFeatured: true },
-      orderBy: { createdAt: "desc" },
-    });
-    if (reviews.length > 0) {
-      return (reviews as Array<{
-        id: string;
-        authorName: string;
-        authorCountry: string | null;
-        rating: number;
-        reviewDate: Date | null;
-        travelMonth: string | null;
-        title: string | null;
-        comment: string;
-        source: string | null;
-        isVerified: boolean;
-        isFeatured: boolean;
-      }>).map((r) => ({
-        id: r.id,
-        authorName: r.authorName,
-        authorCountry: r.authorCountry || "International Traveler",
-        rating: r.rating,
-        reviewDate: r.reviewDate ? r.reviewDate.toISOString() : "Recent",
-        travelMonth: r.travelMonth || "",
-        title: r.title || "",
-        comment: r.comment,
-        source: r.source || "TripAdvisor",
-        tourTitle: undefined,
-        isVerified: r.isVerified,
-        isFeatured: r.isFeatured,
-        isPublished: true,
-        displayOrder: 0,
-      }));
-    }
-  } catch {
-    // ignore
-  }
-
-  return (mockReviews.filter((r) => r.isFeatured && r.isPublished !== false) as unknown as FormattedReview[]);
+  return mockReviews.filter((r) => r.isFeatured).map((r) => formatDbReview(r as unknown as DbReviewItem));
 }
 
-export async function getAllReviews(): Promise<FormattedReview[]> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+export async function getAllReviews(options: { includeUnpublished?: boolean } = {}): Promise<FormattedReview[]> {
+  const db = getFirebaseFirestore();
 
-  if (url && publishableKey) {
+  if (db) {
     try {
-      const client = createClient(url, publishableKey, {
-        global: { fetch: supabaseContentFetch },
-      });
-      const { data, error } = await client
-        .from("reviews")
-        .select("*")
-        .eq("is_published", true)
-        .order("display_order", { ascending: true })
-        .retry(false);
+      const colRef = collection(db, "reviews");
+      const q = options.includeUnpublished
+        ? query(colRef, orderBy("created_at", "desc"))
+        : query(colRef, where("is_published", "==", true), orderBy("created_at", "desc"));
 
-      if (!error && data && data.length > 0) {
-        return (data as unknown as DbReviewItem[]).map(formatDbReview);
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        return snap.docs.map((d) => formatDbReview({ id: d.id, ...d.data() } as DbReviewItem));
       }
     } catch (err) {
-      console.warn("Supabase getAllReviews error, falling back:", err);
+      console.warn("Firestore getAllReviews error, falling back:", err);
     }
   }
 
-  try {
-    const reviews = await prisma.review.findMany({
-      orderBy: { createdAt: "desc" },
-    });
-    if (reviews.length > 0) {
-      return (reviews as Array<{
-        id: string;
-        authorName: string;
-        authorCountry: string | null;
-        rating: number;
-        reviewDate: Date | null;
-        travelMonth: string | null;
-        title: string | null;
-        comment: string;
-        source: string | null;
-        isVerified: boolean;
-        isFeatured: boolean;
-      }>).map((r) => ({
-        id: r.id,
-        authorName: r.authorName,
-        authorCountry: r.authorCountry || "International Traveler",
-        rating: r.rating,
-        reviewDate: r.reviewDate ? r.reviewDate.toISOString() : "Recent",
-        travelMonth: r.travelMonth || "",
-        title: r.title || "",
-        comment: r.comment,
-        source: r.source || "TripAdvisor",
-        tourTitle: undefined,
-        isVerified: r.isVerified,
-        isFeatured: r.isFeatured,
-        isPublished: true,
-        displayOrder: 0,
-      }));
-    }
-  } catch {
-    // ignore
+  let list = mockReviews.map((r) => formatDbReview(r as unknown as DbReviewItem));
+  if (!options.includeUnpublished) {
+    list = list.filter((r) => r.isPublished);
   }
-
-  return (mockReviews as unknown as FormattedReview[]);
+  return list;
 }

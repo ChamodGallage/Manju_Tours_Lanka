@@ -122,11 +122,10 @@ async function runTests() {
     console.table(testResults);
 
     const hasFailure = testResults.some((t) => t.status === "FAIL");
-    if (hasFailure) {
-      process.exitCode = 1;
-    }
-  } finally {
     server.close();
+    process.exit(hasFailure ? 1 : 0);
+  } finally {
+    if (server) server.close();
   }
 }
 

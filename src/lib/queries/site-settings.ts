@@ -1,6 +1,6 @@
-import { createClient } from "@supabase/supabase-js";
 import type { SiteSettings } from "@/types/database.types";
-import { supabaseContentFetch } from "@/lib/supabase/fetch";
+import { getFirebaseFirestore } from "@/lib/firebase/client";
+import { doc, getDoc } from "firebase/firestore";
 
 export const DEFAULT_SITE_SETTINGS: SiteSettings = {
   id: "global",
@@ -33,32 +33,31 @@ export const DEFAULT_SITE_SETTINGS: SiteSettings = {
 };
 
 export async function getSiteSettings(): Promise<SiteSettings> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const db = getFirebaseFirestore();
 
-  if (url && publishableKey) {
+  if (db) {
     try {
-      const client = createClient(url, publishableKey, {
-        global: { fetch: supabaseContentFetch },
-      });
-      const { data, error } = await client
-        .from("site_settings")
-        .select("*")
-        .eq("id", "global")
-        .single()
-        .retry(false);
+      const docRef = doc(db, "siteSettings", "default");
+      const snap = await getDoc(docRef);
 
-      if (!error && data) {
+      if (snap.exists()) {
+        const data = snap.data();
         return {
           ...DEFAULT_SITE_SETTINGS,
-          ...(data as unknown as Partial<SiteSettings>),
+          ...(data as Partial<SiteSettings>),
+          company_name: data.company_name || DEFAULT_SITE_SETTINGS.company_name,
+          tagline: data.tagline || DEFAULT_SITE_SETTINGS.tagline,
+          phone: data.contact_phone || data.phone || DEFAULT_SITE_SETTINGS.phone,
+          whatsapp: data.whatsapp_number || data.whatsapp || DEFAULT_SITE_SETTINGS.whatsapp,
+          email: data.contact_email || data.email || DEFAULT_SITE_SETTINGS.email,
+          address: data.location || data.address || DEFAULT_SITE_SETTINGS.address,
           supported_currencies: Array.isArray(data.supported_currencies)
             ? (data.supported_currencies as string[])
             : DEFAULT_SITE_SETTINGS.supported_currencies,
         };
       }
     } catch (err) {
-      console.warn("Supabase getSiteSettings error, falling back to defaults:", err);
+      console.warn("Firestore siteSettings fetch notice, using default settings:", err);
     }
   }
 

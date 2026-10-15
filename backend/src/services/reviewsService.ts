@@ -1,4 +1,5 @@
-import { getAdminSupabaseClient, getPublicSupabaseClient } from "../config/supabase.js";
+import { getBackendFirestore } from "../config/firebase.js";
+import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 import { reviewsSeed } from "../data/seed-dataset.js";
 import type { ReviewItem } from "../types/database.types.js";
 import { logger } from "../utils/logger.js";
@@ -24,18 +25,16 @@ let runtimeReviews: ReviewItem[] = reviewsSeed.map((r, index) => ({
 
 export const reviewsService = {
   async getAll(): Promise<ReviewItem[]> {
-    const client = getPublicSupabaseClient() || getAdminSupabaseClient();
-    if (client) {
+    const db = getBackendFirestore();
+    if (db) {
       try {
-        const { data, error } = await client
-          .from("reviews")
-          .select("*")
-          .order("display_order", { ascending: true });
-        if (!error && data && data.length > 0) {
-          return data as ReviewItem[];
+        const q = query(collection(db, "reviews"), where("is_published", "==", true));
+        const snap = await getDocs(q);
+        if (!snap.empty) {
+          return snap.docs.map((d) => ({ id: d.id, ...d.data() } as ReviewItem));
         }
       } catch (err) {
-        logger.warn("Supabase reviews error:", err);
+        logger.warn("Firestore reviews notice, using runtime reviews:", err);
       }
     }
     return runtimeReviews;

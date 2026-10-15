@@ -1,6 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
-import { supabaseContentFetch } from "@/lib/supabase/fetch";
-import prisma from "../db";
+import { getFirebaseFirestore } from "@/lib/firebase/client";
+import { collection, doc, getDoc, getDocs, query, where, orderBy } from "firebase/firestore";
 import { mockDestinations } from "../data/mock-data";
 import { getSiteImages } from "./site-images";
 import type { DestinationItem } from "@/types/database.types";
@@ -99,19 +98,20 @@ async function enrichDestinationsWithDbImages(dests: FormattedDestination[]): Pr
     if (!siteImages || siteImages.length === 0) return dests;
 
     return dests.map((dest) => {
-      const match = siteImages.find(
+      const heroOverride = siteImages.find(
         (img) =>
           img.destination === dest.slug &&
-          (img.section_key === "hero" || img.category === "hero" || img.category === "destination")
+          (img.section_key === "hero" || img.category === "destination" || img.category === "hero")
       );
-      if (match && match.image_url) {
+
+      if (heroOverride && heroOverride.image_url) {
         return {
           ...dest,
           heroImage: {
-            src: match.image_url,
-            alt: match.alt_text || dest.name,
-            caption: match.description || dest.tagline || "",
-            focalPoint: "center 30%",
+            ...dest.heroImage,
+            src: heroOverride.image_url,
+            alt: heroOverride.alt_text || dest.name,
+            caption: heroOverride.description || heroOverride.title || dest.tagline,
           },
         };
       }
@@ -123,45 +123,26 @@ async function enrichDestinationsWithDbImages(dests: FormattedDestination[]): Pr
 }
 
 export async function getAllDestinations(options: { includeUnpublished?: boolean } = {}): Promise<FormattedDestination[]> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const db = getFirebaseFirestore();
 
-  if (url && publishableKey) {
+  if (db) {
     try {
-      const client = createClient(url, publishableKey, {
-        global: { fetch: supabaseContentFetch },
-      });
-      let query = client.from("destinations").select("*");
+      const destCol = collection(db, "destinations");
+      const q = options.includeUnpublished
+        ? query(destCol, orderBy("display_order", "asc"))
+        : query(destCol, where("is_published", "==", true), orderBy("display_order", "asc"));
 
-      if (!options.includeUnpublished) {
-        query = query.eq("is_published", true);
-      }
-
-      const { data, error } = await query.order("display_order", { ascending: true }).retry(false);
-
-      if (!error && data && data.length > 0) {
-        const formatted = (data as unknown as DestinationItem[]).map(formatDestination);
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const formatted = snap.docs.map((d) => formatDestination(d.data() as DestinationItem));
         return enrichDestinationsWithDbImages(formatted);
       }
     } catch (err) {
-      console.warn("Supabase destinations query notice, checking fallback:", err);
+      console.warn("Firestore destinations query notice, checking fallback:", err);
     }
   }
 
-  // Fallback 1: Prisma if configured
-  try {
-    const destinations = await prisma.destination.findMany({
-      orderBy: { displayOrder: "asc" },
-    });
-    if (destinations.length > 0) {
-      const formatted = (destinations as unknown as DestinationItem[]).map(formatDestination);
-      return enrichDestinationsWithDbImages(formatted);
-    }
-  } catch {
-    // expected if DATABASE_URL is not set
-  }
-
-  // Fallback 2: Mock destinations
+  // Fallback: Mock destinations
   let list = mockDestinations.map((d) => formatDestination(d as unknown as DestinationItem));
   if (!options.includeUnpublished) {
     list = list.filter((d) => d.isPublished);
@@ -170,28 +151,24 @@ export async function getAllDestinations(options: { includeUnpublished?: boolean
 }
 
 export async function getFeaturedDestinations(): Promise<FormattedDestination[]> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const db = getFirebaseFirestore();
 
-  if (url && publishableKey) {
+  if (db) {
     try {
-      const client = createClient(url, publishableKey, {
-        global: { fetch: supabaseContentFetch },
-      });
-      const { data, error } = await client
-        .from("destinations")
-        .select("*")
-        .eq("is_published", true)
-        .eq("is_featured", true)
-        .order("display_order", { ascending: true })
-        .retry(false);
-
-      if (!error && data && data.length > 0) {
-        const formatted = (data as unknown as DestinationItem[]).map(formatDestination);
+      const destCol = collection(db, "destinations");
+      const q = query(
+        destCol,
+        where("is_published", "==", true),
+        where("is_featured", "==", true),
+        orderBy("display_order", "asc")
+      );
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const formatted = snap.docs.map((d) => formatDestination(d.data() as DestinationItem));
         return enrichDestinationsWithDbImages(formatted);
       }
     } catch (err) {
-      console.warn("Supabase featured destinations query notice, checking fallback:", err);
+      console.warn("Firestore featured destinations query notice, checking fallback:", err);
     }
   }
 
@@ -202,28 +179,28 @@ export async function getFeaturedDestinations(): Promise<FormattedDestination[]>
 }
 
 export async function getDestinationBySlug(slug: string): Promise<FormattedDestination | null> {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const publishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const db = getFirebaseFirestore();
 
-  if (url && publishableKey) {
+  if (db) {
     try {
-      const client = createClient(url, publishableKey, {
-        global: { fetch: supabaseContentFetch },
-      });
-      const { data, error } = await client
-        .from("destinations")
-        .select("*")
-        .eq("slug", slug)
-        .maybeSingle()
-        .retry(false);
+      const docRef = doc(db, "destinations", slug);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const formatted = formatDestination(docSnap.data() as DestinationItem);
+        const enriched = await enrichDestinationsWithDbImages([formatted]);
+        return enriched[0];
+      }
 
-      if (!error && data) {
-        const formatted = formatDestination(data as unknown as DestinationItem);
+      // Query by slug attribute if document key differed
+      const q = query(collection(db, "destinations"), where("slug", "==", slug));
+      const snap = await getDocs(q);
+      if (!snap.empty) {
+        const formatted = formatDestination(snap.docs[0].data() as DestinationItem);
         const enriched = await enrichDestinationsWithDbImages([formatted]);
         return enriched[0];
       }
     } catch (err) {
-      console.warn(`Supabase destination query for ${slug} notice:`, err);
+      console.warn(`Firestore destination query for ${slug} notice:`, err);
     }
   }
 
@@ -233,4 +210,14 @@ export async function getDestinationBySlug(slug: string): Promise<FormattedDesti
   const formatted = formatDestination(found as unknown as DestinationItem);
   const enriched = await enrichDestinationsWithDbImages([formatted]);
   return enriched[0];
+}
+
+export async function getRelatedDestinations(currentSlug: string, limitCount = 3): Promise<FormattedDestination[]> {
+  const all = await getAllDestinations();
+  return all.filter((d) => d.slug !== currentSlug).slice(0, limitCount);
+}
+
+export async function getDestinationSlugs(): Promise<string[]> {
+  const all = await getAllDestinations();
+  return all.map((d) => d.slug);
 }
