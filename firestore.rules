@@ -6,6 +6,40 @@ service cloud.firestore {
       return request.auth != null && request.auth.token.admin == true;
     }
 
+    function hasValidInquiryShape() {
+      let data = request.resource.data;
+      return data.keys().hasAll([
+          'name', 'email', 'phone', 'country', 'number_of_adults',
+          'number_of_children', 'travel_style', 'message', 'status',
+          'source', 'ip_hash', 'created_at', 'updated_at'
+        ])
+        && data.keys().hasOnly([
+          'tour_id', 'tour_title', 'name', 'email', 'phone', 'country',
+          'travel_start_date', 'travel_end_date', 'flexible_month',
+          'number_of_adults', 'number_of_children', 'travel_style',
+          'message', 'status', 'source', 'ip_hash', 'created_at',
+          'updated_at'
+        ])
+        && data.name is string && data.name.size() > 0 && data.name.size() <= 120
+        && data.email is string && data.email.matches('^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$')
+        && data.phone is string && data.phone.size() >= 6 && data.phone.size() <= 30
+        && data.country is string && data.country.size() <= 100
+        && data.travel_style is string && data.travel_style.size() <= 100
+        && data.message is string && data.message.size() > 0 && data.message.size() <= 5000
+        && data.number_of_adults is int && data.number_of_adults >= 1 && data.number_of_adults <= 30
+        && data.number_of_children is int && data.number_of_children >= 0 && data.number_of_children <= 20
+        && data.status == 'NEW'
+        && data.source is string && data.source.size() > 0 && data.source.size() <= 120
+        && data.ip_hash is string && data.ip_hash.matches('^[a-f0-9]{64}$')
+        && data.created_at is string && data.created_at.size() <= 40
+        && data.updated_at is string && data.updated_at.size() <= 40
+        && (!('tour_id' in data) || data.tour_id == null || data.tour_id is string)
+        && (!('tour_title' in data) || data.tour_title == null || data.tour_title is string)
+        && (!('travel_start_date' in data) || data.travel_start_date == null || data.travel_start_date is string)
+        && (!('travel_end_date' in data) || data.travel_end_date == null || data.travel_end_date is string)
+        && (!('flexible_month' in data) || data.flexible_month == null || data.flexible_month is string);
+    }
+
     // Site settings: hero, logo, contact information
     match /siteSettings/{docId} {
       allow read: if true;
@@ -14,13 +48,13 @@ service cloud.firestore {
 
     // Destinations collection
     match /destinations/{destId} {
-      allow read: if true;
+      allow read: if isAdmin() || resource.data.is_published == true;
       allow write: if isAdmin();
     }
 
     // Tours collection
     match /tours/{tourId} {
-      allow read: if true;
+      allow read: if isAdmin() || resource.data.is_published == true;
       allow write: if isAdmin();
     }
 
@@ -32,7 +66,7 @@ service cloud.firestore {
 
     // Customer inquiries: visitors can submit, only admin can read and manage
     match /inquiries/{inquiryId} {
-      allow create: if true;
+      allow create: if hasValidInquiryShape();
       allow read, update, delete: if isAdmin();
     }
 
