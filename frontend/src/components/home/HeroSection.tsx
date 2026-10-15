@@ -125,7 +125,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ slides, content }) => 
                   src={slide.src}
                   alt={slide.alt}
                   fill
-                  priority={index === 0}
+                  loading={index === 0 ? "eager" : "lazy"}
                   style={slide.focalPoint ? { objectPosition: slide.focalPoint } : undefined}
                   className={`object-cover ${
                     shouldReduceMotion ? "" : "animate-[kenburns_12s_ease-out_infinite_alternate]"

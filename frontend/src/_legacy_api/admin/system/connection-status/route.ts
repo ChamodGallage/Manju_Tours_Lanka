@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000";
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5001";
     const res = await fetch(`${backendUrl}/api/health`, { next: { revalidate: 0 } });
     if (!res.ok) {
       return NextResponse.json({ status: "DEGRADED", message: `Backend responded with HTTP ${res.status}` });
