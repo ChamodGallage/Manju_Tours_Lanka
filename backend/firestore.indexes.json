@@ -102,11 +102,6 @@
       ]
     },
     {
-      "collectionGroup": "inquiries",
-      "queryScope": "COLLECTION",
-      "fields": [{ "fieldPath": "created_at", "order": "DESCENDING" }]
-    },
-    {
       "collectionGroup": "experiences",
       "queryScope": "COLLECTION",
       "fields": [

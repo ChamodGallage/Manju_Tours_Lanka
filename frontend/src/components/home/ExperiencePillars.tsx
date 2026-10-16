@@ -162,6 +162,12 @@ export const ExperiencePillars: React.FC<ExperiencePillarsProps> = ({ customImag
                   alt={currentAlt}
                   fill
                   slotLabel={`${pillar.name} Visual Tile`}
+                  loading={
+                    currentImg === "/images/destinations/nuwara-eliya/hero.webp" ||
+                    currentImg === "/images/experiences/sigiriya-sunrise-climb/hero.webp"
+                      ? "eager"
+                      : "lazy"
+                  }
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                   className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   focalPoint={focalPoint}
